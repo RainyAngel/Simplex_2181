@@ -103,7 +103,7 @@ void AppClass::InitVariables(void)
 	//Generate space for the VBO (vertex count times size of vec3)
 	glBufferData(GL_ARRAY_BUFFER, lVertex.size() * sizeof(glm::vec3), &lVertex[0], GL_STATIC_DRAW);
 
-	//glBufferData(GL_ARRAY_BUFFER, compVertex.size() * sizeof(glm::vec3), &compVertex[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, compVertex.size() * sizeof(glm::vec3), &compVertex[0], GL_STATIC_DRAW);
 
 	//count the attributes
 	int attributeCount = 2;
