@@ -82,6 +82,17 @@ void AppClass::InitVariables(void)
 	//vertex 3
 	lVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //position
 	lVertex.push_back(glm::vec3(0.0f, 0.0f, 1.0f)); //color
+
+	std::vector<glm::vec3> compVertex;
+	//vertex 1
+	compVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
+	compVertex.push_back(glm::vec3(0.0f, 1.0f, 1.0f)); //color
+	//vertex 2
+	compVertex.push_back(glm::vec3(1.0f, -1.0f, 0.0f)); //position
+	compVertex.push_back(glm::vec3(1.0f, 0.0f, 1.0f)); //color
+	//vertex 3
+	compVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //position
+	compVertex.push_back(glm::vec3(1.0f, 1.0f, 0.0f)); //color
 	
 	glGenVertexArrays(1, &m_uVAO);//Generate vertex array object
 	glGenBuffers(1, &m_uVBO);//Generate Vertex Buffered Object
@@ -91,6 +102,8 @@ void AppClass::InitVariables(void)
 
 	//Generate space for the VBO (vertex count times size of vec3)
 	glBufferData(GL_ARRAY_BUFFER, lVertex.size() * sizeof(glm::vec3), &lVertex[0], GL_STATIC_DRAW);
+
+	//glBufferData(GL_ARRAY_BUFFER, compVertex.size() * sizeof(glm::vec3), &compVertex[0], GL_STATIC_DRAW);
 
 	//count the attributes
 	int attributeCount = 2;
