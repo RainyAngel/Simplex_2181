@@ -72,7 +72,6 @@ void AppClass::InitShaders(void)
 }
 void AppClass::InitVariables(void)
 {
-	std::vector<glm::vec3> lVertex;
 	//vertex 1
 	lVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
 	lVertex.push_back(glm::vec3(1.0f, 0.0f, 0.0f)); //color
@@ -83,7 +82,6 @@ void AppClass::InitVariables(void)
 	lVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //position
 	lVertex.push_back(glm::vec3(0.0f, 0.0f, 1.0f)); //color
 
-	std::vector<glm::vec3> compVertex;
 	//vertex 1
 	compVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
 	compVertex.push_back(glm::vec3(0.0f, 1.0f, 1.0f)); //color
@@ -102,8 +100,6 @@ void AppClass::InitVariables(void)
 
 	//Generate space for the VBO (vertex count times size of vec3)
 	glBufferData(GL_ARRAY_BUFFER, lVertex.size() * sizeof(glm::vec3), &lVertex[0], GL_STATIC_DRAW);
-
-	glBufferData(GL_ARRAY_BUFFER, compVertex.size() * sizeof(glm::vec3), &compVertex[0], GL_STATIC_DRAW);
 
 	//count the attributes
 	int attributeCount = 2;
@@ -128,6 +124,21 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
+
+	//press 4 to switch between complimentary and primary
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+		//change whether or not to show complimentary or primary colors
+		m_showComplimentary = !m_showComplimentary;
+
+		if (m_showComplimentary == true) {
+			//bind the complimentary colors
+			glBufferData(GL_ARRAY_BUFFER, compVertex.size() * sizeof(glm::vec3), &compVertex[0], GL_STATIC_DRAW);
+		}
+		else {
+			//bind the primary colors
+			glBufferData(GL_ARRAY_BUFFER, lVertex.size() * sizeof(glm::vec3), &lVertex[0], GL_STATIC_DRAW);
+		}
+	}
 }
 void AppClass::Display(void)
 {

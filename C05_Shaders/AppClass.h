@@ -35,6 +35,10 @@ class AppClass
 
 	//flag for showing complimentary shader
 	bool m_showComplimentary = false;
+
+	//declare vertex shaders 
+	std::vector<glm::vec3> lVertex;
+	std::vector<glm::vec3> compVertex;
 		
 public:
 	/*
