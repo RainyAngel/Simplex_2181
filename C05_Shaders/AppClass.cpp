@@ -72,6 +72,12 @@ void AppClass::InitShaders(void)
 }
 void AppClass::InitVariables(void)
 {
+	//normals will cause weird glitches in the program
+	//changing around how to triangle is drawn will cause the triangle to get flipped around and face a different direction
+	//OpenGL assumes its in a counter clockwise order and calculates the normals accordingly
+	//If you draw in clockwise order, the triangle will not render properly because it will be facing into the screen and the normals will calculate accordingly
+	//Basic Rule: draw vertices counter clockwise
+
 	std::vector<glm::vec3> lVertex;
 	//vertex 1
 	lVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
@@ -86,11 +92,16 @@ void AppClass::InitVariables(void)
 	glGenVertexArrays(1, &m_uVAO);//Generate vertex array object
 	glGenBuffers(1, &m_uVBO);//Generate Vertex Buffered Object
 
+	//need to set and bind VAO first (VAO contains one or more VBOs)
+	//do it with VBO first can cause problems (VBO is stored in VAO- VBO contains info about vertices [color, position, etc.])
+
 	glBindVertexArray(m_uVAO);//Bind the VAO
 	glBindBuffer(GL_ARRAY_BUFFER, m_uVBO);//Bind the VBO
 
 	//Generate space for the VBO (vertex count times size of vec3)
 	glBufferData(GL_ARRAY_BUFFER, lVertex.size() * sizeof(glm::vec3), &lVertex[0], GL_STATIC_DRAW);
+
+	//attricbutes = positions and colors
 
 	//count the attributes
 	int attributeCount = 2;
@@ -105,6 +116,7 @@ void AppClass::InitVariables(void)
 }
 void AppClass::ProcessKeyboard(sf::Event a_event)
 {
+	//change bool here
 	if (a_event.key.code == sf::Keyboard::Key::Escape)//Event says I pressed the Escape key
 		m_bRunning = false;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) //I am currently pressing the Num1 (not the same as above)
@@ -115,6 +127,8 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+		complimentary = !complimentary;
 }
 void AppClass::Display(void)
 {
@@ -124,6 +138,11 @@ void AppClass::Display(void)
 	//read uniforms and send values
 	GLuint SolidColor = glGetUniformLocation(m_uShaderProgramID, "SolidColor");
 	glUniform3f(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);
+
+	//how to access variables from shader and communicate with graphics card
+	GLuint ComplimentaryColor = glGetUniformLocation(m_uShaderProgramID, "Complimentary");
+	glUniform1i(ComplimentaryColor, complimentary);
+	
 
 	//draw content
 	glDrawArrays(GL_TRIANGLES, 0, 3);
