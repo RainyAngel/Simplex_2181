@@ -72,6 +72,7 @@ void AppClass::InitShaders(void)
 }
 void AppClass::InitVariables(void)
 {
+	std::vector<glm::vec3> lVertex;
 	//vertex 1
 	lVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
 	lVertex.push_back(glm::vec3(1.0f, 0.0f, 0.0f)); //color
@@ -81,16 +82,6 @@ void AppClass::InitVariables(void)
 	//vertex 3
 	lVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //position
 	lVertex.push_back(glm::vec3(0.0f, 0.0f, 1.0f)); //color
-
-	//vertex 1
-	compVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
-	compVertex.push_back(glm::vec3(0.0f, 1.0f, 1.0f)); //color
-	//vertex 2
-	compVertex.push_back(glm::vec3(1.0f, -1.0f, 0.0f)); //position
-	compVertex.push_back(glm::vec3(1.0f, 0.0f, 1.0f)); //color
-	//vertex 3
-	compVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //position
-	compVertex.push_back(glm::vec3(1.0f, 1.0f, 0.0f)); //color
 	
 	glGenVertexArrays(1, &m_uVAO);//Generate vertex array object
 	glGenBuffers(1, &m_uVBO);//Generate Vertex Buffered Object
@@ -116,51 +107,14 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 {
 	if (a_event.key.code == sf::Keyboard::Key::Escape)//Event says I pressed the Escape key
 		m_bRunning = false;
-
-	//can now swap between primary and complimentary colors
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-		if (m_showComplimentary) {
-			m_v3Color = glm::vec3(0.0f, 1.0f, 1.0f);
-		}
-		else {
-			m_v3Color = glm::vec3(1.0f, 0.0f, 0.0f);
-		}
-	}//I am currently pressing the Num1 (not the same as above)
-		
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-		if (m_showComplimentary) {
-			m_v3Color = glm::vec3(1.0f, 0.0f, 1.0f);
-		}
-		else {
-			m_v3Color = glm::vec3(0.0f, 1.0f, 0.0f);
-		}
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
-		if (m_showComplimentary) {
-			m_v3Color = glm::vec3(1.0f, 1.0f, 0.0f);
-		}
-		else {
-			m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
-		}
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0)) {
-			m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
-	}
-
-	//press 4 to switch between complimentary and primary
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
-		//change whether or not to show complimentary or primary colors
-		m_showComplimentary = !m_showComplimentary;
-
-		if (m_showComplimentary) {
-			//bind the complimentary colors
-			glBufferData(GL_ARRAY_BUFFER, compVertex.size() * sizeof(glm::vec3), &compVertex[0], GL_STATIC_DRAW);
-		}
-		else {
-			//bind the primary colors
-			glBufferData(GL_ARRAY_BUFFER, lVertex.size() * sizeof(glm::vec3), &lVertex[0], GL_STATIC_DRAW);
-		}
-	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) //I am currently pressing the Num1 (not the same as above)
+		m_v3Color = glm::vec3(1.0f, 0.0f, 0.0f);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+		m_v3Color = glm::vec3(0.0f, 1.0f, 0.0f);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
+		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
 }
 void AppClass::Display(void)
 {
