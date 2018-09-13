@@ -129,6 +129,18 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
 		complimentary = !complimentary;
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) 
+	{
+		m_m4ToWorld = m_m4ToWorld * glm::translate(vector3(0.01f, 0.0f, 0.0f));
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	{
+		m_m4ToWorld = m_m4ToWorld * glm::translate(vector3(0.0f, 0.01f, 0.0f));
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+	{
+		m_m4ToWorld = m_m4ToWorld *  glm::translate(vector3(0.0f, 0.0f, 0.01f));
+	}
 }
 void AppClass::Display(void)
 {
@@ -143,6 +155,12 @@ void AppClass::Display(void)
 	GLuint ComplimentaryColor = glGetUniformLocation(m_uShaderProgramID, "Complimentary");
 	glUniform1i(ComplimentaryColor, complimentary);
 	
+	GLuint M4ToWorld = glGetUniformLocation(m_uShaderProgramID, "M4ToWorld");
+	//const float matrix[16] = { 1,0,0,0, 0,1,0,0, m_v3Position.x, m_v3Position.y, m_v3Position.z, 1 };
+	//glUniformMatrix4fv(M4ToWorld, 1, GL_FALSE, matrix);
+	glUniformMatrix4fv(M4ToWorld, 1, GL_FALSE, glm::value_ptr(m_m4ToWorld));
+
+	printf("%f, %f. %f\n", m_v3Position.x, m_v3Position.y, m_v3Position.z);
 
 	//draw content
 	glDrawArrays(GL_TRIANGLES, 0, 3);
