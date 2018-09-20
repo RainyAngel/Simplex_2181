@@ -16,24 +16,44 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		Calculate a_nSubdivisions number of points around a center point in a radial manner
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
-	/*for (int i = 0; i < a_nSubdivisions; i++)
+
+	//for saving the previous points
+	float prevX = 0.0f;
+	float prevY = 0.0f;
+
+	//for getting the points
+	float x = 0.0f;
+	float y = 0.0f;
+
+	//angle for finding the points
+	float theta = 0.0f;
+
+	//cycle through the number of subdivisions
+	for (int i = 1; i <= a_nSubdivisions; i++)
 	{
-		
-	}*/
+		//find/reset theta
+		theta = (360.0f / a_nSubdivisions) * (PI / 180.0f);
 
-	float theta = 360 / a_nSubdivisions;
+		//if at the beginning, start at radius, 0, 0
+		if (i == 1) {
+			theta = theta * i;
+			x = a_fRadius * cosf(theta);
+			y = a_fRadius * sinf(theta);
 
-	theta = theta * 1;
-	float x = a_fRadius * cosf(theta * (PI/180));
-	float y = a_fRadius * sinf(theta * (PI/180));
+			AddTri(vector3(0, 0, 0), vector3(a_fRadius, 0, 0), vector3(x, y, 0));
+		}
+		//else save previous points and connect all points with triangle
+		else {
+			theta = theta * i;
+			prevX = x;
+			prevY = y;
 
-	AddTri(vector3(0, 0, 0), vector3(x, 0, 0), vector3(0, y, 0));
+			x = a_fRadius * cosf(theta);
+			y = a_fRadius * sinf(theta);
 
-	theta = theta * 2;
-	x = a_fRadius * cosf(theta * (PI / 180));
-	y = a_fRadius * sinf(theta * (PI / 180));
-
-	AddTri(vector3(0, 0, 0), vector3(x, 0, 0), vector3(0, y, 0));
+			AddTri(vector3(0, 0, 0), vector3(prevX, prevY, 0), vector3(x, y, 0));
+		}
+	}	
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
