@@ -275,13 +275,72 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//MAKE CIRCULAR BASE
 
-	// Adding information about color
-	CompleteMesh(a_v3Color);
-	CompileOpenGL3X();
+	//for saving the previous points
+	float prevX = 0.0f;
+	float prevZ = 0.0f;
+
+	//for using previously saved points for connecting circle to tip of cone
+	std::vector<float> baseX;
+	std::vector<float> baseZ;
+
+	//for getting the points
+	float x = 0.0f;
+	float z = 0.0f;
+
+	//angle for finding the points
+	float theta = 0.0f;
+
+	//cycle through the number of subdivisions
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		//find/reset theta
+		theta = (360.0f / a_nSubdivisions) * (PI / 180.0f);
+
+		//if at the beginning, start at radius, 0, 0
+		if (i == 1) {
+			theta = theta * i;
+			x = a_fRadius * cosf(theta);
+			z = a_fRadius * sinf(theta);
+
+			baseX.push_back(a_fRadius);
+			baseZ.push_back(0);
+
+			AddTri(vector3(0, 0, 0), vector3(a_fRadius, 0, 0), vector3(x, 0, z));
+		}
+		//else save previous points and connect all points with triangle
+		else {
+			theta = theta * i;
+			prevX = x;
+			prevZ = z;
+
+			baseX.push_back(x);
+			baseZ.push_back(z);
+
+			x = a_fRadius * cosf(theta);
+			z = a_fRadius * sinf(theta);
+
+			AddTri(vector3(0, 0, 0), vector3(prevX, 0, prevZ), vector3(x, 0, z));
+		}
+	}
+
+	//CONNECT CIRCULAR BASE TO TRIANGLE TIP
+	vector3 tipPoint(0, a_fHeight, 0);
+
+	for (int i = 0; i <= a_nSubdivisions - 1; i++)
+	{
+		if (i == a_nSubdivisions - 1) {
+			AddTri(vector3(baseX[0], 0, baseZ[0]), vector3(baseX[i], 0, baseZ[i]), tipPoint);
+		}
+		else {
+			AddTri(vector3(baseX[i + 1], 0, baseZ[i + 1]), vector3(baseX[i], 0, baseZ[i]), tipPoint);
+		}
+	}
+
+		// Adding information about color
+		CompleteMesh(a_v3Color);
+		CompileOpenGL3X();
 }
 void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
 {
@@ -299,9 +358,68 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//MAKE CIRCULAR BASE AND TOP
+
+	//for saving the previous points
+	float prevX = 0.0f;
+	float prevZ = 0.0f;
+
+	//for using previously saved points for connecting circle to tip of cone
+	std::vector<float> baseX;
+	std::vector<float> baseZ;
+
+	//for getting the points
+	float x = 0.0f;
+	float z = 0.0f;
+
+	//angle for finding the points
+	float theta = 0.0f;
+
+	//cycle through the number of subdivisions
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		//find/reset theta
+		theta = (360.0f / a_nSubdivisions) * (PI / 180.0f);
+
+		//if at the beginning, start at radius, 0, 0
+		if (i == 1) {
+			theta = theta * i;
+			x = a_fRadius * cosf(theta);
+			z = a_fRadius * sinf(theta);
+
+			baseX.push_back(a_fRadius);
+			baseZ.push_back(0);
+
+			AddTri(vector3(0, 0, 0), vector3(a_fRadius, 0, 0), vector3(x, 0, z));
+			AddTri(vector3(a_fRadius, a_fHeight, 0), vector3(0, a_fHeight, 0), vector3(x, a_fHeight, z));
+		}
+		//else save previous points and connect all points with triangle
+		else {
+			theta = theta * i;
+			prevX = x;
+			prevZ = z;
+
+			baseX.push_back(x);
+			baseZ.push_back(z);
+
+			x = a_fRadius * cosf(theta);
+			z = a_fRadius * sinf(theta);
+
+			AddTri(vector3(0, 0, 0), vector3(prevX, 0, prevZ), vector3(x, 0, z));
+			AddTri(vector3(prevX, a_fHeight, prevZ), vector3(0, a_fHeight, 0), vector3(x, a_fHeight, z));
+		}
+	}
+
+	//SIDE PANELS
+	for (int i = 0; i <= a_nSubdivisions - 1; i++)
+	{
+		if (i == a_nSubdivisions - 1) {
+			AddQuad(vector3(baseX[0], 0, baseZ[0]), vector3(baseX[i], 0, baseZ[i]), vector3(baseX[0], a_fHeight, baseZ[0]), vector3(baseX[i], a_fHeight, baseZ[i]));
+		}
+		else {
+			AddQuad(vector3(baseX[i + 1], 0, baseZ[i + 1]), vector3(baseX[i], 0, baseZ[i]), vector3(baseX[i + 1], a_fHeight, baseZ[i + 1]), vector3(baseX[i], a_fHeight, baseZ[i]));
+		}
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
