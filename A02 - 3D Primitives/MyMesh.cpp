@@ -393,7 +393,7 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 			AddTri(vector3(0, 0, 0), vector3(a_fRadius, 0, 0), vector3(x, 0, z));
 			AddTri(vector3(a_fRadius, a_fHeight, 0), vector3(0, a_fHeight, 0), vector3(x, a_fHeight, z));
 		}
-		//else save previous points and connect all points with triangle
+		//else save previous points and connect all points with quad
 		else {
 			theta = theta * i;
 			prevX = x;
@@ -448,8 +448,104 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//for saving the previous points
+	float prevInnerX = 0.0f;
+	float prevInnerZ = 0.0f;
+	float prevOuterX = 0.0f;
+	float prevOuterZ = 0.0f;
+
+	//for using previously saved points for connecting circle to tip of cone
+	std::vector<float> baseInnerX;
+	std::vector<float> baseInnerZ;
+	std::vector<float> baseOuterX;
+	std::vector<float> baseOuterZ;
+
+	//for getting the points
+	float innerX = 0.0f;
+	float innerZ = 0.0f;
+	float outerX = 0.0f;
+	float outerZ = 0.0f;
+
+	//angle for finding the points
+	float theta = 0.0f;
+
+	//cycle through the number of subdivisions
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		//find/reset theta
+		theta = (360.0f / a_nSubdivisions) * (PI / 180.0f);
+
+		//if at the beginning, start at radius, 0, 0
+		if (i == 1) {
+			theta = theta * i;
+			innerX = a_fInnerRadius * cosf(theta);
+			innerZ = a_fInnerRadius * sinf(theta);
+
+			outerX = a_fOuterRadius * cosf(theta);
+			outerZ = a_fOuterRadius * sinf(theta);
+
+			baseInnerX.push_back(a_fInnerRadius);
+			baseInnerZ.push_back(0);
+
+			baseOuterX.push_back(a_fOuterRadius);
+			baseOuterZ.push_back(0);
+
+			//top
+			AddQuad(vector3(a_fInnerRadius, a_fHeight, 0), vector3(innerX, a_fHeight, innerZ),
+				vector3(a_fOuterRadius, a_fHeight, 0), vector3(outerX, a_fHeight, outerZ));
+			//bottom
+			AddQuad(vector3(innerX, 0, innerZ), vector3(a_fInnerRadius, 0, 0),
+				vector3(outerX, 0, outerZ), vector3(a_fOuterRadius, 0, 0));
+		}
+		else {
+			theta = theta * i;
+			prevInnerX = innerX;
+			prevInnerZ = innerZ;
+
+			prevOuterX = outerX;
+			prevOuterZ = outerZ;
+
+			baseInnerX.push_back(innerX);
+			baseInnerZ.push_back(innerZ);
+
+			baseOuterX.push_back(outerX);
+			baseOuterZ.push_back(outerZ);
+
+			innerX = a_fInnerRadius * cosf(theta);
+			innerZ = a_fInnerRadius * sinf(theta);
+
+			outerX = a_fOuterRadius * cosf(theta);
+			outerZ = a_fOuterRadius * sinf(theta);
+
+			//top
+			AddQuad(vector3(prevInnerX, a_fHeight, prevInnerZ), vector3(innerX, a_fHeight, innerZ),
+				vector3(prevOuterX, a_fHeight, prevOuterZ), vector3(outerX, a_fHeight, outerZ));
+			//bottom
+			AddQuad(vector3(innerX, 0, innerZ), vector3(prevInnerX, 0, prevInnerZ),
+				vector3(outerX, 0, outerZ), vector3(prevOuterX, 0, prevOuterZ));
+		}
+	}
+	
+	//ADD SIDE PANELS
+	for (int i = 0; i <= a_nSubdivisions - 1; i++)
+	{
+		if (i == a_nSubdivisions - 1) {
+			//inner
+			AddQuad(vector3(baseInnerX[i], 0, baseInnerZ[i]), vector3(baseInnerX[0], 0, baseInnerZ[0]),
+				vector3(baseInnerX[i], a_fHeight, baseInnerZ[i]), vector3(baseInnerX[0], a_fHeight, baseInnerZ[0]));
+			//outer
+			AddQuad(vector3(baseOuterX[0], 0, baseOuterZ[0]), vector3(baseOuterX[i], 0, baseOuterZ[i]),
+				vector3(baseOuterX[0], a_fHeight, baseOuterZ[0]), vector3(baseOuterX[i], a_fHeight, baseOuterZ[i]));
+		}
+		else {
+			//inner
+			AddQuad(vector3(baseInnerX[i], 0, baseInnerZ[i]), vector3(baseInnerX[i + 1], 0, baseInnerZ[i + 1]),
+				vector3(baseInnerX[i], a_fHeight, baseInnerZ[i]), vector3(baseInnerX[i + 1], a_fHeight, baseInnerZ[i + 1]));
+			//outer
+			AddQuad(vector3(baseOuterX[i + 1], 0, baseOuterZ[i + 1]), vector3(baseOuterX[i], 0, baseOuterZ[i]),
+				vector3(baseOuterX[i + 1], a_fHeight, baseOuterZ[i + 1]), vector3(baseOuterX[i], a_fHeight, baseOuterZ[i]));
+		}
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
