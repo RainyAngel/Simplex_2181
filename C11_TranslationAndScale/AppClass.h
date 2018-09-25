@@ -14,6 +14,7 @@ Date: 2017/05
 
 class Application
 {
+	//MyMesh* m_pMesh[46] = nullptr;
 	MyMesh* m_pMesh = nullptr;
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 

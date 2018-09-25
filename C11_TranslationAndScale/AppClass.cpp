@@ -3,8 +3,12 @@ void Application::InitVariables(void)
 {
 	//init the mesh
 	m_pMesh = new MyMesh();
+
 	//m_pMesh->GenerateCube(1.0f, C_WHITE);
-	m_pMesh->GenerateSphere(1.0f, 5, C_WHITE);
+	//m_pMesh->GenerateSphere(1.0f, 5, C_WHITE);
+
+	m_pMesh->GenerateCube(1.0f, C_BLACK);
+
 }
 void Application::Update(void)
 {
@@ -26,11 +30,16 @@ void Application::Display(void)
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 	
 	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(2.0f,2.0f,2.0f));
-	static float value = 0.0f;
-	matrix4 m4Translate = glm::translate(IDENTITY_M4, vector3(value, 2.0f, 3.0f));
-	value += 0.01f;
+	static float xValue = -5.0f;
+	static float yValue = 0.0f;
+	static float zValue = 0.0f;
+	matrix4 m4Translate = glm::translate(IDENTITY_M4, vector3(xValue, yValue, zValue));
+	//value += 0.01f;
 
+	//translate and then scale
 	//matrix4 m4Model = m4Translate * m4Scale;
+
+	//scale then rotate
 	matrix4 m4Model = m4Scale * m4Translate;
 
 	m_pMesh->Render(m4Projection, m4View, m4Model);
