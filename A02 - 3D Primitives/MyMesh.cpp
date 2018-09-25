@@ -614,6 +614,7 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 	float theta = 0.0f;
 
+	//top and bottom of sphere
 	for (int i = 1; i <= a_nSubdivisions; i++)
 	{
 		theta = (360.0f / a_nSubdivisions) * (PI / 180.0f);
@@ -645,10 +646,6 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		}
 	}
 
-	//divide by subdivisions - i
-	//start at -radius and go to +radius
-		// need a_nSubdivisions subdivisions in x,z of sphere
-
 	//calculate the different heights for each
 	for (int k = (a_nSubdivisions - 1); k >= 0; k--)
 	{
@@ -661,9 +658,6 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 	//push 0 onto the end for the middle
 	baseY.push_back(0);
-
-	std::cout << "Radius: " << a_fRadius << std::endl;
-	std::cout << "Y: " << baseY[0] << std::endl;
 
 		/*AddQuad(vector3(baseX[0] / a_nSubdivisions, baseY[0], baseZ[0] / a_nSubdivisions),
 			vector3(baseX[1] / a_nSubdivisions, baseY[0], baseZ[1] / a_nSubdivisions),
@@ -701,12 +695,12 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 			if (i == a_nSubdivisions - 1) {
 				AddQuad(vector3(baseX[i + 1] / a_nSubdivisions, baseY[h], baseZ[i + 1] / a_nSubdivisions),
 					vector3(baseX[i] / a_nSubdivisions, baseY[h], baseZ[i] / a_nSubdivisions),
-					vector3(baseX[i + 1], baseY[h + 1], baseZ[i + 1]), vector3(baseX[i], baseY[h + 1], baseZ[i]));
+					vector3(baseX[i + 1], -baseY[h + 1], baseZ[i + 1]), vector3(baseX[i], baseY[h + 1], baseZ[i]));
 			}
 			else {
-				AddQuad(vector3(baseX[i + 1] / a_nSubdivisions, baseY[h], baseZ[i + 1] / a_nSubdivisions),
-					vector3(baseX[i] / a_nSubdivisions, baseY[h], baseZ[i] / a_nSubdivisions),
-					vector3(baseX[i + 1], baseY[h + 1], baseZ[i + 1]), vector3(baseX[i], baseY[h + 1], baseZ[i]));
+				AddQuad(vector3(baseX[i + 1] / a_nSubdivisions, -baseY[h], baseZ[i + 1] / a_nSubdivisions),
+					vector3(baseX[i] / a_nSubdivisions, -baseY[h], baseZ[i] / a_nSubdivisions),
+					vector3(baseX[i + 1], -baseY[h + 1], baseZ[i + 1]), vector3(baseX[i], -baseY[h + 1], baseZ[i]));
 			}
 		}
 	}
