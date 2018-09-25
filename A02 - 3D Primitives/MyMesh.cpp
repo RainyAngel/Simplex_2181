@@ -600,9 +600,116 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	float prevX = 0.0f;
+	float prevY = 0.0f;
+	float prevZ = 0.0f;
+
+	std::vector<float> baseX;
+	std::vector<float> baseY;
+	std::vector<float> baseZ;
+
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+
+	float theta = 0.0f;
+
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		theta = (360.0f / a_nSubdivisions) * (PI / 180.0f);
+
+		if (i == 1) {
+			theta = theta * i;
+			x = a_fRadius * cosf(theta);
+			z = a_fRadius * sinf(theta);
+
+			baseX.push_back(a_fRadius);
+			baseZ.push_back(0);
+
+			AddTri(vector3(0, -a_fRadius, 0), vector3(a_fRadius / a_nSubdivisions, -a_fRadius, 0), vector3(x / a_nSubdivisions, -a_fRadius, z / a_nSubdivisions));
+			AddTri(vector3(a_fRadius / a_nSubdivisions, a_fRadius, 0), vector3(0, a_fRadius, 0), vector3(x / a_nSubdivisions, a_fRadius, z / a_nSubdivisions));
+		}
+		else {
+			theta = theta * i;
+			prevX = x;
+			prevZ = z;
+
+			baseX.push_back(x);
+			baseZ.push_back(z);
+
+			x = a_fRadius * cosf(theta);
+			z = a_fRadius * sinf(theta);
+
+			AddTri(vector3(0, -a_fRadius, 0), vector3(prevX / a_nSubdivisions, -a_fRadius, prevZ / a_nSubdivisions), vector3(x / a_nSubdivisions, -a_fRadius, z / a_nSubdivisions));
+			AddTri(vector3(prevX / a_nSubdivisions, a_fRadius, prevZ / a_nSubdivisions), vector3(0, a_fRadius, 0), vector3(x / a_nSubdivisions, a_fRadius, z / a_nSubdivisions));
+		}
+	}
+
+	//divide by subdivisions - i
+	//start at -radius and go to +radius
+		// need a_nSubdivisions subdivisions in x,z of sphere
+
+	//calculate the different heights for each
+	for (int k = (a_nSubdivisions - 1); k >= 0; k--)
+	{
+		//calculate the height starting at the positive radius
+		//and end at 0
+		y = a_fRadius / (a_nSubdivisions - k);
+		//push to the y vector
+		baseY.push_back(y);
+	}
+
+	//push 0 onto the end for the middle
+	baseY.push_back(0);
+
+	std::cout << "Radius: " << a_fRadius << std::endl;
+	std::cout << "Y: " << baseY[0] << std::endl;
+
+		/*AddQuad(vector3(baseX[0] / a_nSubdivisions, baseY[0], baseZ[0] / a_nSubdivisions),
+			vector3(baseX[1] / a_nSubdivisions, baseY[0], baseZ[1] / a_nSubdivisions),
+			vector3(baseX[0], baseY[1], baseZ[0]),
+			vector3(baseX[1], baseY[1], baseZ[1]));*/
+
+	//top of sphere
+	for (int h = 0; h < a_nSubdivisions; h++)
+	{
+		//have to go in reverse due to how previous points were saved
+		for (int i = a_nSubdivisions - 1; i >= 0; i--)
+		{
+			if (i == a_nSubdivisions - 1) {
+				//start from the top
+				AddQuad(vector3(baseX[i] / a_nSubdivisions, baseY[h], baseZ[i] / a_nSubdivisions),
+					vector3(baseX[0] / a_nSubdivisions, baseY[h], baseZ[0] / a_nSubdivisions),
+					vector3(baseX[i], baseY[h + 1], baseZ[i]),
+					vector3(baseX[0], baseY[h + 1], baseZ[0]));
+			}
+			else {
+								//top
+				AddQuad(vector3(baseX[i] / a_nSubdivisions, baseY[h], baseZ[i] / a_nSubdivisions),
+					vector3(baseX[i + 1] / a_nSubdivisions, baseY[h], baseZ[i + 1] / a_nSubdivisions),
+					vector3(baseX[i], baseY[h + 1], baseZ[i]), vector3(baseX[i + 1], baseY[h + 1], baseZ[i + 1]));
+			}
+		}
+	}
+
+	//bottom of sphere
+	for (int h = a_nSubdivisions - 1; h >= 0; h--)
+	{
+		//have to go in reverse due to how previous points were saved above
+		for (int i = a_nSubdivisions - 1; i >= 0; i--)
+		{
+			if (i == a_nSubdivisions - 1) {
+				AddQuad(vector3(baseX[i + 1] / a_nSubdivisions, baseY[h], baseZ[i + 1] / a_nSubdivisions),
+					vector3(baseX[i] / a_nSubdivisions, baseY[h], baseZ[i] / a_nSubdivisions),
+					vector3(baseX[i + 1], baseY[h + 1], baseZ[i + 1]), vector3(baseX[i], baseY[h + 1], baseZ[i]));
+			}
+			else {
+				AddQuad(vector3(baseX[i + 1] / a_nSubdivisions, baseY[h], baseZ[i + 1] / a_nSubdivisions),
+					vector3(baseX[i] / a_nSubdivisions, baseY[h], baseZ[i] / a_nSubdivisions),
+					vector3(baseX[i + 1], baseY[h + 1], baseZ[i + 1]), vector3(baseX[i], baseY[h + 1], baseZ[i]));
+			}
+		}
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
