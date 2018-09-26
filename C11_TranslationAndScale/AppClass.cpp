@@ -2,13 +2,11 @@
 void Application::InitVariables(void)
 {
 	//init the mesh
-	m_pMesh = new MyMesh();
-
-	//m_pMesh->GenerateCube(1.0f, C_WHITE);
-	//m_pMesh->GenerateSphere(1.0f, 5, C_WHITE);
-
-	m_pMesh->GenerateCube(1.0f, C_BLACK);
-
+	for (int i = 0; i < 46; i++)
+	{
+		m_pMesh[i] = new MyMesh();
+		m_pMesh[i]->GenerateCube(1.0f, C_BLACK);
+	}
 }
 void Application::Update(void)
 {
@@ -29,21 +27,62 @@ void Application::Display(void)
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 	
-	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(2.0f,2.0f,2.0f));
-	static float xValue = -5.0f;
-	static float yValue = 0.0f;
-	static float zValue = 0.0f;
-	matrix4 m4Translate = glm::translate(IDENTITY_M4, vector3(xValue, yValue, zValue));
-	//value += 0.01f;
+	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(1.0f,1.0f,1.0f));
+
+	//x starts at -5 and ends at 5
+	//y starts at 4 and ends at -4 
+	float xVal = -5.0f;
+	float yVal = 4.0f; 
+
+	//loop through the space invader array 
+	for (int x = 0; x < 11; x++)
+	{
+		//restore yVal
+		yVal = 4.0f; 
+
+		for (int y = 0; y < 8; y++)
+		{
+			//if there is a value of 1, save a certain x and y value 
+			if (spaceInvader[y][x] == 1) {
+				xValues.push_back(xVal);
+				yValues.push_back(yVal);
+			}
+			//deduct yVal every iteration of the loop
+			yVal -= 1.0f;
+		}
+		//add to xVal every iteration of the loop
+		xVal += 1.0f;
+	}
+
+	//declare all variables outside of loop
+	matrix4 m4Model;
+	matrix4 m4Translate;
+
+	//to move spaceInvader
+	xMove += 0.01f;
+	yMove += yIncrement; 
+
+	if (yMove >= 3.0f) { 
+		yIncrement = -0.01f;
+	} 
+	else if (yMove <= 0.0f) { 
+		yIncrement = 0.01f;
+	}
+
+	//loop through and draw the cubes 
+	for (int pos = 0; pos < 46; pos++)
+	{
+	m4Translate = glm::translate(IDENTITY_M4, vector3(xValues[pos] + xMove, yValues[pos] + yMove, 0.0f));
 
 	//translate and then scale
-	//matrix4 m4Model = m4Translate * m4Scale;
+	m4Model = m4Translate * m4Scale;
 
 	//scale then rotate
-	matrix4 m4Model = m4Scale * m4Translate;
-
-	m_pMesh->Render(m4Projection, m4View, m4Model);
+	//m4Model = m4Scale * m4Translate;
 	
+	m_pMesh[pos]->Render(m4Projection, m4View, m4Model);
+	}	
+
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 	
@@ -61,7 +100,10 @@ void Application::Display(void)
 }
 void Application::Release(void)
 {
-	SafeDelete(m_pMesh);
+	for (int i = 0; i < 46; i++)
+	{
+		SafeDelete(m_pMesh[i]);
+	}
 
 	//release GUI
 	ShutdownGUI();

@@ -14,8 +14,30 @@ Date: 2017/05
 
 class Application
 {
-	//MyMesh* m_pMesh[46] = nullptr;
-	MyMesh* m_pMesh = nullptr;
+	MyMesh* m_pMesh[46];
+
+	//space invader box location placer
+	int spaceInvader[8][11] = {
+		0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
+		0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+		0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+		0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1,
+		1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1,
+		0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0
+	};
+
+	//for storing the box locations
+	std::vector<float> xValues;
+	std::vector<float> yValues;
+
+	//for moving the cubes
+	float xMove = 0.0f;
+	float yMove = 0.0f;
+	float yIncrement = 0.0f;
+
+	//MyMesh* m_pMesh = nullptr;
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 private:
