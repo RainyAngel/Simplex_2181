@@ -7,6 +7,31 @@ void Application::InitVariables(void)
 		m_pMesh[i] = new MyMesh();
 		m_pMesh[i]->GenerateCube(1.0f, C_BLACK);
 	}
+
+	//x starts at -5 and ends at 5
+	//y starts at 4 and ends at -4 
+	float xVal = -5.0f;
+	float yVal = 4.0f;
+
+	//loop through the space invader array 
+	for (int x = 0; x < 11; x++)
+	{
+		//restore yVal
+		yVal = 4.0f;
+
+		for (int y = 0; y < 8; y++)
+		{
+			//if there is a value of 1, save a certain x and y value 
+			if (spaceInvader[y][x] == 1) {
+				xValues.push_back(xVal);
+				yValues.push_back(yVal);
+			}
+			//deduct yVal every iteration of the loop
+			yVal -= 1.0f;
+		}
+		//add to xVal every iteration of the loop
+		xVal += 1.0f;
+	}
 }
 void Application::Update(void)
 {
@@ -28,31 +53,6 @@ void Application::Display(void)
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 	
 	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(1.0f,1.0f,1.0f));
-
-	//x starts at -5 and ends at 5
-	//y starts at 4 and ends at -4 
-	float xVal = -5.0f;
-	float yVal = 4.0f; 
-
-	//loop through the space invader array 
-	for (int x = 0; x < 11; x++)
-	{
-		//restore yVal
-		yVal = 4.0f; 
-
-		for (int y = 0; y < 8; y++)
-		{
-			//if there is a value of 1, save a certain x and y value 
-			if (spaceInvader[y][x] == 1) {
-				xValues.push_back(xVal);
-				yValues.push_back(yVal);
-			}
-			//deduct yVal every iteration of the loop
-			yVal -= 1.0f;
-		}
-		//add to xVal every iteration of the loop
-		xVal += 1.0f;
-	}
 
 	//declare all variables outside of loop
 	matrix4 m4Model;
