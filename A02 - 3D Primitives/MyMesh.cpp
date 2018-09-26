@@ -276,7 +276,6 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	//MAKE CIRCULAR BASE
-
 	//for saving the previous points
 	float prevX = 0.0f;
 	float prevZ = 0.0f;
@@ -325,7 +324,7 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 		}
 	}
 
-	//CONNECT CIRCULAR BASE TO TRIANGLE TIP
+	//CONNECT CIRCULAR BASE TO POINT 
 	vector3 tipPoint(0, a_fHeight, 0);
 
 	for (int i = 0; i <= a_nSubdivisions - 1; i++)
@@ -360,25 +359,20 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 
 	//MAKE CIRCULAR BASE AND TOP
 
-	//for saving the previous points
 	float prevX = 0.0f;
 	float prevZ = 0.0f;
 
-	//for using previously saved points for connecting circle to tip of cone
+	//for using previously saved points for connecting circle to top and bottom circle
 	std::vector<float> baseX;
 	std::vector<float> baseZ;
 
-	//for getting the points
 	float x = 0.0f;
 	float z = 0.0f;
 
-	//angle for finding the points
 	float theta = 0.0f;
 
-	//cycle through the number of subdivisions
 	for (int i = 1; i <= a_nSubdivisions; i++)
 	{
-		//find/reset theta
 		theta = (360.0f / a_nSubdivisions) * (PI / 180.0f);
 
 		//if at the beginning, start at radius, 0, 0
@@ -447,35 +441,29 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 
-	// Replace this with your code
 	//for saving the previous points
 	float prevInnerX = 0.0f;
 	float prevInnerZ = 0.0f;
 	float prevOuterX = 0.0f;
 	float prevOuterZ = 0.0f;
 
-	//for using previously saved points for connecting circle to tip of cone
+	//for using previously saved points for connecting circle to the outer circle and inner circle
 	std::vector<float> baseInnerX;
 	std::vector<float> baseInnerZ;
 	std::vector<float> baseOuterX;
 	std::vector<float> baseOuterZ;
 
-	//for getting the points
 	float innerX = 0.0f;
 	float innerZ = 0.0f;
 	float outerX = 0.0f;
 	float outerZ = 0.0f;
 
-	//angle for finding the points
 	float theta = 0.0f;
 
-	//cycle through the number of subdivisions
 	for (int i = 1; i <= a_nSubdivisions; i++)
 	{
-		//find/reset theta
 		theta = (360.0f / a_nSubdivisions) * (PI / 180.0f);
 
-		//if at the beginning, start at radius, 0, 0
 		if (i == 1) {
 			theta = theta * i;
 			innerX = a_fInnerRadius * cosf(theta);
@@ -600,10 +588,6 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	float prevX = 0.0f;
-	float prevY = 0.0f;
-	float prevZ = 0.0f;
-
 	std::vector<float> baseX;
 	std::vector<float> baseY;
 	std::vector<float> baseZ;
@@ -637,23 +621,28 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	for (int h = 0; h < a_nSubdivisions; h++)
 	{
 		//a_fRadius = sqrtf(a_fRadius);
-		//gets the radius for each subdivision level
+		//gets the radius for each subdivision level (pythagroean theorem)
 		rads = sqrtf((a_fRadius * a_fRadius) - (baseY[h] * baseY[h]));
 
+		//save these as the first two points of every circle "layer"
 		baseX.push_back(rads);
 		baseZ.push_back(0);
 
 		for (int j = 1; j < a_nSubdivisions; j++)
 		{
+			//make the other points on the circle based on the radius calculated above
 			x = rads * cos(theta * j);
 			z = rads * sin(theta * j);
 
 			baseX.push_back(x);
 			baseZ.push_back(z);
 
+			//for getting the points needed to create and connect the circle
 			float currPnt = j + (h * a_nSubdivisions);
 			float prevPnt = j + ((h - 1) * a_nSubdivisions);
 
+			//create the different layers of circles
+			//when h is 0, the first layer is tris to a point
 			if (h == 0) {
 				AddTri(vector3(baseX[j - 1], baseY[h], baseZ[j-1]), top, vector3(baseX[j], baseY[h], baseZ[j]));
 			}
@@ -667,7 +656,7 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 				AddTri(vector3(baseX[j - 1], baseY[h], baseZ[j - 1]), vector3(baseX[j], baseY[h], baseZ[j]), bottom);
 			}
 		}
-		//make the last triangle
+		//make the last triangle of the top
 		if (h == 0) {
 			AddTri(vector3(baseX[a_nSubdivisions - 1], baseY[h], baseZ[a_nSubdivisions - 1]), top, vector3(baseX[0], baseY[h], baseZ[0]));
 		}
