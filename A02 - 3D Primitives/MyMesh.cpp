@@ -564,7 +564,8 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	//"make" circle of given subdivisions and outerRadius here (x and z) -- save the points
+	//"make" circles of given subdivisions with the radius of outerRadius - innerRadius (x and y and z)
 	// -------------------------------
 
 	// Adding information about color
