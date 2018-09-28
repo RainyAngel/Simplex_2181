@@ -53,18 +53,26 @@ void Application::Display(void)
 
 	//calculate the current position
 	vector3 v3CurrentPos;
-	
 
 
-
-
-	//your code goes here
 	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
-	//-------------------
-	
+	static float percent = 0.0f;
+	static int point = 0;
+	static bool flag = true;
 
+	if (point%(m_stopsList.size()-1) == 0) {
+		point = 0;
+	}
 
+	v3CurrentPos = glm::lerp(m_stopsList[point], m_stopsList[point + 1], percent);
 	
+	percent += 0.01f;
+
+	if (percent >= 1.0f) {
+		point++;
+		percent = 0.0f;
+	}
+
 	matrix4 m4Model = glm::translate(v3CurrentPos);
 	m_pModel->SetModelMatrix(m4Model);
 
