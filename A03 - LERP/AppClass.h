@@ -25,7 +25,11 @@ class Application
 	String m_sProgrammer = "Charley Link - crl4975@rit.edu";
 
 	//vector for storing the points on each orbit
-	std::vector<vector3> orbits; 
+	std::vector<vector3> orbitPoints; 
+	//vector for storing all the points per orbit
+	std::vector<std::vector<vector3>> orbits;
+	//vector for getting the individual point of each orbit
+	std::vector<uint> point;
 
 	//vector for saving the different orbit sizes so points can be calculated
 	std::vector<float> innerRadius;

@@ -54,16 +54,20 @@ void Application::InitVariables(void)
 		//first orbit
 		for (uint k = 0; k < uSides + j; k++)
 		{
+			//calculate the points on the shape
 			rads = (360.0f / (uSides + j)) * (PI / 180);
 			theta = rads * k;
 
 			x = outerRadius[j] * cos(theta);
 			y = outerRadius[j] * sin(theta);
 
-			std::cout << outerRadius[j] * cosf(theta) << std::endl;
-
-			orbits.push_back(vector3(x, y, 0));
+			orbitPoints.push_back(vector3(x, y, 0));
 		}
+		//save the overall vector
+		orbits.push_back(orbitPoints);
+
+		//clear the orbitPoints array for the next orbit
+		orbitPoints.clear();
 	}
 }
 void Application::Update(void)
@@ -93,49 +97,42 @@ void Application::Display(void)
 
 	//for lerping
 	static float percent = 0.0f;	//increments until the point is hit
-	static int point = 0;	//keeps track of where the sphere should be going to
-	static vector3 start = orbits[point];
-	static vector3 end = orbits[point + 1];
-
-	//calculate the current position
-	static vector3 v3CurrentPos = ZERO_V3;
-
-	if (point % (orbits.size()-1) == 0) {
-		point = 0;
-	}
-
-	//set the start equal to the end
-	start = orbits[point];
-	//set end to the next point
-	end = orbits[point + 1];
-
-	//move the circle
-	v3CurrentPos = glm::lerp(orbits[point], orbits[point + 1], percent);
-
-	std::cout << "Start: " << start.x << " " << start.y << std::endl;
-	std::cout << "End: " << end.x << " " << end.y << std::endl;
+	static uint currPoint = 0;	//keeps track of where the sphere should be going to
 
 	//increment percent so the circle moves
 	percent += 0.01f;
 
-	//if the circle reaches the next point...
-	if (percent >= 1.0f) {
-		//move to the next point
-		point++;
-		//reset percent since it is starting at a new point
-		percent = 0.0f;
+	//store necessary number of current points before entering the big loop
+	for (uint p = 0; p < m_uOrbits; p++)
+	{
+		point.push_back(currPoint);
 	}
-
-	/*if (point % (orbits.size() - 1) == 0) {
-		start = orbits[point];
-		end = orbits[0];
-	}*/
 
 	// draw a shapes
 	for (uint i = 0; i < m_uOrbits; ++i)
 	{
 		//calculate the current position
-		//vector3 v3CurrentPos = ZERO_V3; 
+		vector3 v3CurrentPos = ZERO_V3;
+
+		//for completing the loop
+		vector3 start = orbits[i][0];
+		vector3 end = orbits[i][1];
+
+		//if the circle reaches the next point...
+		if (percent >= 1.0f) {
+			//move to the next point
+			point[i]++;
+			//reset percent since it is starting at a new point
+			percent = 0.0f;
+		}
+
+		//this is the problematic reset code
+		if (point[i] % (orbits[i].size() - 1) == 0) {
+			point[i] = 0;
+		}
+
+		//calculate the current position
+		v3CurrentPos = glm::lerp(orbits[i][point[i]], orbits[i][point[i] + 1], percent);
 
 		m_pMeshMngr->AddMeshToRenderList(m_shapeList[i], glm::rotate(m4Offset, 1.5708f, AXIS_X));
 
