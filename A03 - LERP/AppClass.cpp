@@ -37,15 +37,19 @@ void Application::InitVariables(void)
 	{
 		vector3 v3Color = WaveLengthToRGB(uColor); //calculate color based on wavelength
 		m_shapeList.push_back(m_pMeshMngr->GenerateTorus(fSize, fSize - 0.1f, 3, i, v3Color)); //generate a custom torus and add it to the meshmanager
+
 		//store this for calculating where the points are on the orbits
 		outerRadius.push_back(fSize);
-		//innerRadius.push_back(fSize - 0.1f);
+
 		fSize += 0.5f; //increment the size for the next orbit
 		uColor -= static_cast<uint>(decrements); //decrease the wavelength
 	}
 
+	//calculation of the angle in radians
 	float rads = 0.0f;
+	//actual angle to be used by sine and cosine
 	float theta = 0.0f;
+	//x and y coordinates of each point
 	float x = 0.0f;
 	float y = 0.0f;
 
@@ -128,6 +132,7 @@ void Application::Display(void)
 
 		//if at the end of the shape's orbit...
 		if (point[i] % orbits[i].size() == 0) {
+			//reset point for the loop
 			point[i] = 0;
 
 			//set end to the first point
