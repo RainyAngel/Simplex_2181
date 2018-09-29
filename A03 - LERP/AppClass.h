@@ -16,11 +16,20 @@ Date: 2017/05
 #include "ControllerConfiguration.h"
 #include "imgui\ImGuiObject.h"
 
+#include <vector>
+
 class Application
 {
 	uint m_uOrbits = 0; //number of shapes starting at 3 and increasing in sides
 	std::vector<uint> m_shapeList; //shape index for circles
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	String m_sProgrammer = "Charley Link - crl4975@rit.edu";
+
+	//vector for storing the points on each orbit
+	std::vector<vector3> orbits; 
+
+	//vector for saving the different orbit sizes so points can be calculated
+	std::vector<float> innerRadius;
+	std::vector<float> outerRadius;
 	
 private:
 	static ImGuiObject gui; //GUI object
