@@ -37,8 +37,9 @@ void Application::InitVariables(void)
 	{
 		vector3 v3Color = WaveLengthToRGB(uColor); //calculate color based on wavelength
 		m_shapeList.push_back(m_pMeshMngr->GenerateTorus(fSize, fSize - 0.1f, 3, i, v3Color)); //generate a custom torus and add it to the meshmanager
+		//store this for calculating where the points are on the orbits
 		outerRadius.push_back(fSize);
-		innerRadius.push_back(fSize - 0.1f);
+		//innerRadius.push_back(fSize - 0.1f);
 		fSize += 0.5f; //increment the size for the next orbit
 		uColor -= static_cast<uint>(decrements); //decrease the wavelength
 	}
@@ -68,6 +69,14 @@ void Application::InitVariables(void)
 
 		//clear the orbitPoints array for the next orbit
 		orbitPoints.clear();
+
+		//initialize each orbit's point and percent values
+		point.push_back(0);
+		percent.push_back(0.0f);
+
+		//initialize the vectors needed for completing the loop
+		start.push_back(orbits[j][0]);
+		end.push_back(orbits[j][1]);
 	}
 }
 void Application::Update(void)
@@ -93,20 +102,7 @@ void Application::Display(void)
 	/*
 		The following offset will orient the orbits as in the demo, start without it to make your life easier.
 	*/
-	//m4Offset = glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Z);
-
-	//for lerping
-	static float percent = 0.0f;	//increments until the point is hit
-	static uint currPoint = 0;	//keeps track of where the sphere should be going to
-
-	//increment percent so the circle moves
-	percent += 0.01f;
-
-	//store necessary number of current points before entering the big loop
-	for (uint p = 0; p < m_uOrbits; p++)
-	{
-		point.push_back(currPoint);
-	}
+	m4Offset = glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Z);
 
 	// draw a shapes
 	for (uint i = 0; i < m_uOrbits; ++i)
@@ -114,25 +110,35 @@ void Application::Display(void)
 		//calculate the current position
 		vector3 v3CurrentPos = ZERO_V3;
 
-		//for completing the loop
-		vector3 start = orbits[i][0];
-		vector3 end = orbits[i][1];
+		//increment percent so the circle moves
+		percent[i] += 0.01f;
 
 		//if the circle reaches the next point...
-		if (percent >= 1.0f) {
+		if (percent[i] >= 1.0f) {
 			//move to the next point
 			point[i]++;
 			//reset percent since it is starting at a new point
-			percent = 0.0f;
+			percent[i] = 0.0f;
+
+			//swap the start and end
+			start[i] = end[i];
+			//give end the next value
+			end[i] = orbits[i][point[i]];
 		}
 
-		//this is the problematic reset code
-		if (point[i] % (orbits[i].size() - 1) == 0) {
+		//if at the end of the shape's orbit...
+		if (point[i] % orbits[i].size() == 0) {
 			point[i] = 0;
+
+			//set end to the first point
+			end[i] = orbits[i][0];
 		}
+
+		//orbits[i][point[i]]
+		//orbits[i][point[i] + 1]
 
 		//calculate the current position
-		v3CurrentPos = glm::lerp(orbits[i][point[i]], orbits[i][point[i] + 1], percent);
+		v3CurrentPos = glm::lerp(start[i], end[i], percent[i]);
 
 		m_pMeshMngr->AddMeshToRenderList(m_shapeList[i], glm::rotate(m4Offset, 1.5708f, AXIS_X));
 

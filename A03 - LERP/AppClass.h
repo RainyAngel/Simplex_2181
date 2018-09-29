@@ -28,12 +28,18 @@ class Application
 	std::vector<vector3> orbitPoints; 
 	//vector for storing all the points per orbit
 	std::vector<std::vector<vector3>> orbits;
-	//vector for getting the individual point of each orbit
-	std::vector<uint> point;
 
 	//vector for saving the different orbit sizes so points can be calculated
-	std::vector<float> innerRadius;
 	std::vector<float> outerRadius;
+
+	//vector for getting the individual point of each orbit
+	std::vector<uint> point;
+	//vector for storing each unique percent
+	std::vector<float> percent;
+
+	//vectors for storing the start and ends of each orbit
+	std::vector<vector3> start;
+	std::vector<vector3> end;
 	
 private:
 	static ImGuiObject gui; //GUI object
