@@ -75,7 +75,7 @@ void Application::InitVariables(void)
 		orbitPoints.clear();
 
 		//initialize each orbit's point and percent values
-		point.push_back(0);
+		point.push_back(1);
 		percent.push_back(0.0f);
 
 		//initialize the vectors needed for completing the loop
@@ -126,6 +126,7 @@ void Application::Display(void)
 
 			//swap the start and end
 			start[i] = end[i];
+
 			//give end the next value
 			end[i] = orbits[i][point[i]];
 		}
@@ -135,12 +136,10 @@ void Application::Display(void)
 			//reset point for the loop
 			point[i] = 0;
 
-			//set end to the first point
+			//set end to the first point so it loops again
 			end[i] = orbits[i][0];
-		}
 
-		//orbits[i][point[i]]
-		//orbits[i][point[i] + 1]
+		}
 
 		//calculate the current position
 		v3CurrentPos = glm::lerp(start[i], end[i], percent[i]);
