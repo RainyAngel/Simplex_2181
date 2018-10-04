@@ -50,13 +50,17 @@ void Application::Display(void)
 	m4Position = glm::translate(vector3(0.0f));  //ignoring anything that happened before
 	
 	//new matrix transformation
-	matrix4 m4Transform = glm::rotate(IDENTITY_M4, glm::radians(m_v3Angles.x), vector3(1.0f, 0.0f, 0.0f));
+	matrix4 m4RotX = glm::rotate(IDENTITY_M4, glm::radians(m_v3Angles.x), AXIS_X);
+	matrix4 m4RotY = glm::rotate(IDENTITY_M4, glm::radians(m_v3Angles.y), AXIS_Y);
+	matrix4 m4RotZ = glm::rotate(IDENTITY_M4, glm::radians(m_v3Angles.z), AXIS_Z);
+
+	matrix4 m4Transform = m4RotX * m4RotY * m4RotZ;
 
 	//render in the new position
-	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), m4Position);
+	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), m4Transform);
 
-	//change the angle
-	m_v3Angles.x = fTimer;
+	//change the axis
+	//m_v3Angles = vector3(fTimer * 45.0f);
 
 	/*if (fPercent >= 1.0f)
 	{
