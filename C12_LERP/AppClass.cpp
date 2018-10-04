@@ -25,6 +25,24 @@ void Application::Display(void)
 	// Clear the screen
 	ClearScreen();
 
+	//creating a timer
+	static DWORD StartingTime = GetTickCount();
+	DWORD CurrentTime = GetTickCount();
+	DWORD Delta = CurrentTime - StartingTime;
+	float fTimer = static_cast<float>(Delta / 1000.0f);
+
+	std::cout << fTimer << std::endl;
+
+	float animTime = 10.0f;
+	float percent = MapValue(fTimer, 0.0f, animTime, 0.0f, 1.0f);
+
+	static vector3 end = vector3(5.0f, 0.0f, 0.0f);
+	static vector3 start = vector3(-5.0f, 0.0f, 0.0f);
+
+	vector3 CurrentPos = glm::lerp(start, end, percent);
+
+	matrix4 m4Model = glm::translate(IDENTITY_M4, CurrentPos);
+
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix(); //view Matrix
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix(); //Projection Matrix
 	
@@ -46,7 +64,7 @@ void Application::Display(void)
 
 	//Sol2
 	//Get a timer
-	static float fTimer = 0;	//store the new timer
+	/*static float fTimer = 0;	//store the new timer
 	static uint uClock = m_pSystem->GenClock(); //generate a new clock for that timer
 	fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
 
@@ -83,19 +101,24 @@ void Application::Display(void)
 		route++; //go to the next route
 		fTimer = m_pSystem->GetDeltaTime(uClock);//restart the clock
 		route %= v3Stop.size();//make sure we are within boundries
-	}
+	}*/
 		
 	// render the object
 	m_pMesh->Render(m4Projection, m4View, m4Model);
+
+	if (percent >= 1.0f) {
+		StartingTime = GetTickCount();
+		std::swap(start, end);
+	}
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 
 	// draw stops to know we are within stops
-	for (uint i = 0; i < v3Stop.size(); ++i)
+	/*for (uint i = 0; i < v3Stop.size(); ++i)
 	{
 		m_pMeshMngr->AddSphereToRenderList(glm::translate(v3Stop[i]) * glm::scale(vector3(0.15f)), C_RED, RENDER_WIRE);
-	}
+	}*/
 
 	
 	//render list call
