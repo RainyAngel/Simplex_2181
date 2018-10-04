@@ -1,10 +1,10 @@
 #include "AppClass.h"
 void Application::InitVariables(void)
 {
-	m_pCameraMngr->SetPositionTargetAndUpward(AXIS_Z * 20, ZERO_V3, AXIS_Y);
+	m_pCameraMngr->SetPositionTargetAndUpward(AXIS_Z * 5, ZERO_V3, AXIS_Y);
 	//Make MyMesh object
 	m_pMesh = new MyMesh();
-	m_pMesh->GenerateCube(1.0f, C_RED);
+	m_pMesh->GenerateCone(1.0f, 2.0f, 3, C_RED);
 
 	//Make MyMesh object
 	m_pMesh1 = new MyMesh();
@@ -46,18 +46,26 @@ void Application::Display(void)
 
 	matrix4 m4Rotation = glm::rotate(IDENTITY_M4, glm::radians(fCurrent), AXIS_Z);
 	matrix4 m4Position = glm::translate(m4Rotation, v3EndPoint);
-	
 
+	m4Position = glm::translate(vector3(0.0f));  //ignoring anything that happened before
+	
+	//new matrix transformation
+	matrix4 m4Transform = glm::rotate(IDENTITY_M4, glm::radians(m_v3Angles.x), vector3(1.0f, 0.0f, 0.0f));
+
+	//render in the new position
 	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), m4Position);
 
-	if (fPercent >= 1.0f)
+	//change the angle
+	m_v3Angles.x = fTimer;
+
+	/*if (fPercent >= 1.0f)
 	{
 		DStartingTime = GetTickCount();
 		//std::swap(v3InitialPoint, v3EndPoint);
 		std::swap(fStart, fEnd);
 		//fPercent = 0.00f;
 	}
-	fPercent += 0.01f;
+	fPercent += 0.01f;*/
 
 	//m_pMesh1->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), glm::translate(vector3( 3.0f, 0.0f, 0.0f)));
 		
