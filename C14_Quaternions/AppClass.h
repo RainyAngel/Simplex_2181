@@ -20,6 +20,8 @@ class Application
 	quaternion m_qOrientation; //orientation for the Model in quaternions
 	float m_fFovy = 45.0f;
 
+	MyMesh* m_pMesh;
+
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 private:
