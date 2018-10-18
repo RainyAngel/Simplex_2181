@@ -3,7 +3,7 @@ using namespace Simplex;
 void Application::InitVariables(void)
 {
 	//Change this to your name and email
-	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Charley Link - crl4975@rit.edu";
 
 	//Set the position and target of the camera
 	//(I'm at [0,0,10], looking at [0,0,0] and up is the positive Y axis)
@@ -45,6 +45,11 @@ void Application::Display(void)
 	//draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 
+	float fovy = 45.0f;
+	float aspect = m_pSystem->GetWindowWidth() / m_pSystem->GetWindowHeight();
+	float nearPlane;
+	float farPlane;
+
 	//calculate view and projection
 	switch (m_uProjection)
 	{
@@ -54,15 +59,20 @@ void Application::Display(void)
 		break;
 	case 2:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPerspective(false);
 		break;
 	case 3:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(30.0f, 0.0f, 0.0f), ZERO_V3, AXIS_Z * -1.0f);
 		break;
 	case 4:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, -15.0f), ZERO_V3, AXIS_Y);
 		break;
 	case 5:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetNearFar(vector2(5.0f, 1000.0f));
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, -15.0f), ZERO_V3, AXIS_Y);
 		break;
 	case 6:
 		m_pCamera->ResetCamera();
