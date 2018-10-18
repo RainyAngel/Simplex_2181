@@ -10,6 +10,9 @@ void Application::InitVariables(void)
 
 	//Load a model
 	m_pModel->Load("Minecraft\\Steve.obj");
+
+	m_pMesh = new MyMesh();
+	m_pMesh->GenerateCube(7.0f, C_RED);
 }
 void Application::Update(void)
 {
@@ -31,8 +34,17 @@ void Application::Update(void)
 	if (false)
 	{
 		quaternion q1;
+		//quaternion q2 = glm::angleAxis(glm::radians(359.9f), vector3(0.0f, 0.0f, 1.0f));
+		//quaternion q2 = glm::angleAxis(glm::radians(180.0f), vector3(0.0f, 0.0f, 1.0f));
+		//quaternion q2 = glm::angleAxis(glm::radians(360.0f), vector3(0.0f, 0.0f, 1.0f)); --> use this instead
+		//the above doesn't work because of rounding errors
 		quaternion q2 = glm::angleAxis(glm::radians(359.9f), vector3(0.0f, 0.0f, 1.0f));
-		float fPercentage = MapValue(fTimer, 0.0f, 5.0f, 0.0f, 1.0f);
+
+		//5 seconds
+		//float fPercentage = MapValue(fTimer, 0.0f, 5.0f, 0.0f, 1.0f);
+		//2 seconds
+		float fPercentage = MapValue(fTimer, 0.0f, 2.0f, 0.0f, 1.0f);
+		//give 2 orientations and give the lerp of the two orientations
 		quaternion qSLERP = glm::mix(q1, q2, fPercentage);
 		m_m4Steve = glm::toMat4(qSLERP);
 	}
@@ -48,7 +60,7 @@ void Application::Update(void)
 		m_m4Steve = glm::toMat4(m_qOrientation);
 	}
 #pragma endregion
-#pragma region orientation using quaternions
+#pragma region orientation using quaternions 
 	if (true)
 	{
 		m_m4Steve = glm::toMat4(m_qOrientation);
@@ -66,20 +78,49 @@ void Application::Display(void)
 	// Clear the screen
 	ClearScreen();
 	
+	matrix4 m4Model = IDENTITY_M4; //glm::translate(m_v3Orientation);
+
+	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
+
+	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
+
+	//orthographic view
+	//m4Projection = glm::ortho(-25.0f, 25.0f, -5.0f, 5.0f, 0.01f, 100.0f);
+
+	//perspective view
+	//float fFOV = 45.0f + (m_v3Orientation.x * 0.01f); //how wide is my field of view (usually 90.0f degrees)
+	float fFOV = 90.0f;
+	float fAspect = static_cast<float>(m_pSystem->GetWindowWidth()) / static_cast<float>(m_pSystem->GetWindowHeight());
+	float fNear = 0.01f;
+	float fFar = 20.0f;
+
+	m4Projection = glm::perspective(fFOV, fAspect, fNear, fFar);
+
+	vector3 v3Position = vector3(0.0f, 0.0f, 5.0f);
+	vector3 v3Target;
+	vector3 v3Up = vector3(0.0f, 1.0f, 0.0f);
+
+	//view matrix is where is the camera is facing
+	m4View = glm::lookAt(v3Position, v3Target, v3Up);
+
+
+	//need model matrix, view matrix, and projection matrix 
+	//m_pMesh->Render(m4Projection, m4View, m4Model);
+
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 
-	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
-	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
+	//matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
+	//matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 
-	float fovy = m_fFovy; // field of view
+	/*float fovy = m_fFovy; // field of view
 	//float aspect = 1; //aspect ratio
 	//float aspect = 1080.0f / 720.0f; //aspect ratio
 	float aspect = m_pSystem->GetWindowWidth() / m_pSystem->GetWindowHeight(); //aspect ratio
-	float zNear = 10.0f; //near clipping plane
+	float zNear = 1.0f; //near clipping plane
 	float zFar = 1000.0f; //far clipping plane
 
-	m4Projection = glm::perspective(fovy, aspect, zNear, zFar);
+	m4Projection = glm::perspective(fovy, aspect, zNear, zFar);*/
 
 	//send back the matrix you calculated 
 	m_pCameraMngr->SetProjectionMatrix(m4Projection);
@@ -101,6 +142,8 @@ void Application::Release(void)
 {
 	//release model
 	SafeDelete(m_pModel);
+
+	SafeDelete(m_pMesh);
 
 	//release GUI
 	ShutdownGUI();
