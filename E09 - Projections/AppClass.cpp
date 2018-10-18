@@ -76,9 +76,12 @@ void Application::Display(void)
 		break;
 	case 6:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetNearFar(vector2(1.0f, 10.0f));
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, -15.0f), ZERO_V3, AXIS_Y);
 		break;
 	case 7:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(AXIS_Z * 10.0f, ZERO_V3, AXIS_Y * -1.0f);
 		break;
 	}
 
