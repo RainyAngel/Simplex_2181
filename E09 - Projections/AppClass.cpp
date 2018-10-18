@@ -17,7 +17,7 @@ void Application::InitVariables(void)
 	m_pMesh2 = new MyMesh();
 	m_pMesh2->GenerateTorus(3.0f, 2.0f, 8, 8, C_GREEN);
 
-	m_pMesh3 = new MyMesh();
+	m_pMesh3 = new MyMesh(); 
 	m_pMesh3->GenerateCone(0.5f, 1.0f, 6, C_BLUE);
 
 	//create a new camera
