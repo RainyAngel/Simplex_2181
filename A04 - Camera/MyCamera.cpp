@@ -219,12 +219,25 @@ void MyCamera::Rotate(uint x, uint y)
 #pragma endregion Getting Mouse Position
 
 	//the angles of rotation
-	uint xTheta = (MouseX - CenterX) * 0.1f;
-	uint yTheta = (MouseY - CenterY) * 0.1f;
+	int xTheta = -(((int)MouseX - (int)CenterX) * 0.1f);
+	int yTheta = ((int)MouseY - (int)CenterY) * 0.1f;
 
 	//check maximum rotation speed of xTheta
-
+	if (xTheta > 5) {
+		xTheta = 5;
+	}
+	//check minimum rotation speed of xTheta
+	else if (xTheta < -5) {
+		xTheta = -5;
+	}
 	//check maximum rotation speed of yTheta
+	if (yTheta > 5) {
+		yTheta = 5;
+	}
+	//check minimum rotation speed of yTheta
+	else if (yTheta < -5) {
+		yTheta = -5;
+	}
 
 	//the directions I need to get my actual rotation direction
 	vector3 zDirection = (m_v3Target - m_v3Position);
@@ -237,24 +250,34 @@ void MyCamera::Rotate(uint x, uint y)
 	vector3 xDirection = glm::rotate(zDirection, glm::radians(90.0f), yDirection);
 
 	//what to rotate
-	vector3 horizontalRotation = (m_v3Target - m_v3Position);
-	vector3 verticalRotation = (m_v3Above - m_v3Position);
+	vector3 forwardVector = (m_v3Target - m_v3Position);
+	vector3 upVector = (m_v3Above - m_v3Position);
 
-	horizontalRotation = glm::normalize(horizontalRotation);
-	verticalRotation = glm::normalize(verticalRotation);
+	forwardVector = glm::normalize(forwardVector);
+	upVector = glm::normalize(upVector);
 
 	//rotate x and y
-	horizontalRotation = glm::rotate(horizontalRotation, glm::radians((float)xTheta), AXIS_Y);
-	verticalRotation = glm::rotate(verticalRotation, glm::radians((float)yTheta), xDirection);
+	forwardVector = glm::rotate(forwardVector, glm::radians((float)xTheta), AXIS_Y);
+	upVector = glm::rotate(upVector, glm::radians((float)yTheta), xDirection);
 
-	//the target changes upon horizontal rotation
-	//m_v3Target = m_v3Position + horizontalRotation;
+	//now rotate m_v3Target around the relative "right"
+	m_v3Target = m_v3Position + glm::rotate(upVector, glm::radians(90.0f), xDirection);
 
-	//now rotate m+v3Target around the relative "right"
-	m_v3Target = m_v3Position + glm::rotate(horizontalRotation, glm::radians((float)yTheta), xDirection);;
+	//set the forward vector after rotating vertically
+	forwardVector = (m_v3Target - m_v3Position);
+	forwardVector = glm::normalize(forwardVector);
+
+	//rotate it with the new vertical rotation accounted for
+	forwardVector = glm::rotate(forwardVector, glm::radians((float)xTheta), AXIS_Y);
+	
+	//apply the rotation
+	m_v3Target = m_v3Position + forwardVector;
+
+	//rotate up vector with everything
+	upVector = glm::rotate(upVector, glm::radians((float)xTheta), AXIS_Y);
+
 	//rotate above accordingly
-	m_v3Above = m_v3Position + verticalRotation;
-
+	m_v3Above = m_v3Position + upVector;
 }
 
 
