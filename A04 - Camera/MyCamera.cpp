@@ -218,7 +218,43 @@ void MyCamera::Rotate(uint x, uint y)
 	MouseY = pt.y;  
 #pragma endregion Getting Mouse Position
 
-	
+	//the angles of rotation
+	uint xTheta = (MouseX - CenterX) * 0.1f;
+	uint yTheta = (MouseY - CenterY) * 0.1f;
+
+	//check maximum rotation speed of xTheta
+
+	//check maximum rotation speed of yTheta
+
+	//the directions I need to get my actual rotation direction
+	vector3 zDirection = (m_v3Target - m_v3Position);
+	vector3 yDirection = (m_v3Above - m_v3Position);
+
+	zDirection = glm::normalize(zDirection);
+	yDirection = glm::normalize(yDirection);
+
+	//the direction I am going to rotate vertically around
+	vector3 xDirection = glm::rotate(zDirection, glm::radians(90.0f), yDirection);
+
+	//what to rotate
+	vector3 horizontalRotation = (m_v3Target - m_v3Position);
+	vector3 verticalRotation = (m_v3Above - m_v3Position);
+
+	horizontalRotation = glm::normalize(horizontalRotation);
+	verticalRotation = glm::normalize(verticalRotation);
+
+	//rotate x and y
+	horizontalRotation = glm::rotate(horizontalRotation, glm::radians((float)xTheta), AXIS_Y);
+	verticalRotation = glm::rotate(verticalRotation, glm::radians((float)yTheta), xDirection);
+
+	//the target changes upon horizontal rotation
+	//m_v3Target = m_v3Position + horizontalRotation;
+
+	//now rotate m+v3Target around the relative "right"
+	m_v3Target = m_v3Position + glm::rotate(horizontalRotation, glm::radians((float)yTheta), xDirection);;
+	//rotate above accordingly
+	m_v3Above = m_v3Position + verticalRotation;
+
 }
 
 
