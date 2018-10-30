@@ -230,8 +230,11 @@ public:
 	OUTPUT: ---
 	*/
 	void MoveSideways(float a_fDistance = 0.1f);
-};
 
+	//for rotating the camera
+	//get the calculated center of the screen to be set to the mouse
+	void Rotate(uint x, uint y); 
+};
 } //namespace Simplex
 
 #endif //__MYCAMERACLASS_H_

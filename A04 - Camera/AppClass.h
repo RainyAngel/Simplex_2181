@@ -34,7 +34,7 @@ private:
 	bool m_bRunning = false; //Is app running?
 
 	sf::Window* m_pWindow = nullptr; //SFML window
-	Simplex::SystemSingleton* m_pSystem = nullptr; //Singleton of the system
+	Simplex::SystemSingleton* m_pSystem = nullptr; //Singleton of the system 
 	Simplex::LightManager* m_pLightMngr = nullptr; //Light Manager of the system
 	Simplex::MeshManager* m_pMeshMngr = nullptr; //MyMesh Manager
 	Simplex::CameraManager* m_pCameraMngr = nullptr; //Singleton for the camera manager

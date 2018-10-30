@@ -20,12 +20,12 @@ void Application::ProcessMousePressed(sf::Event a_event)
 	case sf::Mouse::Button::Left:
 		gui.m_bMousePressed[0] = true;
 		break;
-	case sf::Mouse::Button::Middle:
+	case sf::Mouse::Button::Middle: 
 		gui.m_bMousePressed[1] = true;
 		m_bArcBall = true;
 		break;
 	case sf::Mouse::Button::Right:
-		gui.m_bMousePressed[2] = true;
+		gui.m_bMousePressed[2] = true; 
 		m_bFPC = true;
 		break;
 	}
@@ -390,6 +390,23 @@ void Application::ProcessKeyboard(void)
 		m_pCamera->MoveForward(fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(-fSpeed);
+	
+	//vertical key presses
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		m_pCamera->MoveVertical(fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		m_pCamera->MoveVertical(-fSpeed);
+
+	//sideways key presses
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_pCamera->MoveSideways(fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		m_pCamera->MoveSideways(-fSpeed); 
+
+	//rotation key press
+	if (gui.m_bMousePressed[2])
+		m_pCamera->Rotate((m_pSystem->GetWindowX() + m_pSystem->GetWindowWidth() / 2),
+			(m_pSystem->GetWindowY() + m_pSystem->GetWindowHeight() / 2));
 #pragma endregion
 }
 //Joystick

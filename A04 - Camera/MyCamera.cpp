@@ -152,11 +152,133 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	//want to go from position to target (aka the direction my camera is facing)
+	vector3 direction = (m_v3Target - m_v3Position);
+
+	//normalize the vector
+	direction = glm::normalize(direction);
+
+	//multiply by distance to get how far in the direction to go
+	direction = direction * a_fDistance;
+
+	//apply the direction vector
+	m_v3Position += direction;
+	m_v3Target += direction;
+	m_v3Above += direction;
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+void MyCamera::MoveVertical(float a_fDistance)
+{
+	//want to go from position to the point above
+	vector3 direction = (m_v3Above - m_v3Position);
+
+	//lather, rinse, repeat
+	direction = glm::normalize(direction);
+
+	direction = direction * a_fDistance;
+
+	m_v3Position += direction;
+	m_v3Target += direction;
+	m_v3Above += direction;
+} 
+
+void MyCamera::MoveSideways(float a_fDistance)
+{
+	vector3 direction = (m_v3Target - m_v3Position);
+	vector3 yDirection = (m_v3Above - m_v3Position);
+
+	direction = glm::normalize(direction);
+	yDirection = glm::normalize(yDirection); 
+
+	//rotate the forward vector around the y vector
+	direction = glm::rotate(direction, glm::radians(90.0f), yDirection) * a_fDistance; 
+
+	m_v3Position += direction;
+	m_v3Target += direction;
+	m_v3Above += direction;
+}
+
+void MyCamera::Rotate(uint x, uint y)
+{
+#pragma region Getting Mouse Position
+	//mouse pos
+	UINT	MouseX, MouseY;		
+
+	//center of screen
+	UINT	CenterX, CenterY;	
+
+	//set pos of pointer to center screen 
+	CenterX = x;
+	CenterY = y;
+
+	//Calculate the position of the mouse and store it
+	POINT pt;
+	GetCursorPos(&pt);
+	MouseX = pt.x;
+	MouseY = pt.y;  
+#pragma endregion Getting Mouse Position
+
+	//the angles of rotation
+	int xTheta = -(((int)MouseX - (int)CenterX) * 0.1f);
+	int yTheta = ((int)MouseY - (int)CenterY) * 0.1f;
+
+	//check maximum rotation speed of xTheta
+	if (xTheta > 5) {
+		xTheta = 5;
+	}
+	//check minimum rotation speed of xTheta
+	else if (xTheta < -5) {
+		xTheta = -5;
+	}
+	//check maximum rotation speed of yTheta
+	if (yTheta > 5) {
+		yTheta = 5;
+	}
+	//check minimum rotation speed of yTheta
+	else if (yTheta < -5) {
+		yTheta = -5;
+	}
+
+	//the directions I need to get my actual rotation direction
+	vector3 zDirection = (m_v3Target - m_v3Position);
+	vector3 yDirection = (m_v3Above - m_v3Position);
+
+	zDirection = glm::normalize(zDirection);
+	yDirection = glm::normalize(yDirection);
+
+	//the direction I am going to rotate vertically around
+	vector3 xDirection = glm::rotate(zDirection, glm::radians(90.0f), yDirection);
+
+	//what to rotate
+	vector3 forwardVector = (m_v3Target - m_v3Position);
+	vector3 upVector = (m_v3Above - m_v3Position);
+
+	forwardVector = glm::normalize(forwardVector);
+	upVector = glm::normalize(upVector);
+
+	//rotate x and y
+	forwardVector = glm::rotate(forwardVector, glm::radians((float)xTheta), AXIS_Y);
+	upVector = glm::rotate(upVector, glm::radians((float)yTheta), xDirection);
+
+	//now rotate m_v3Target around the relative "right"
+	m_v3Target = m_v3Position + glm::rotate(upVector, glm::radians(90.0f), xDirection);
+
+	//set the forward vector after rotating vertically
+	forwardVector = (m_v3Target - m_v3Position);
+	forwardVector = glm::normalize(forwardVector);
+
+	//rotate it with the new vertical rotation accounted for
+	forwardVector = glm::rotate(forwardVector, glm::radians((float)xTheta), AXIS_Y);
+	
+	//apply the rotation
+	m_v3Target = m_v3Position + forwardVector;
+
+	//rotate up vector with everything
+	upVector = glm::rotate(upVector, glm::radians((float)xTheta), AXIS_Y);
+
+	//rotate above accordingly
+	m_v3Above = m_v3Position + upVector;
+}
+
+
+
