@@ -116,7 +116,7 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 		else if (m_v3MinG.y > v3Points[i].y) m_v3MinG.y = v3Points[i].y;
 
 		if (m_v3MaxG.z < v3Points[i].z) m_v3MaxG.z = v3Points[i].z;
-		else if (m_v3MinG.z > v3Points[i].z) m_v3MinG.z = v3Points[i].z;
+		else if (m_v3MinG.z > v3Points[i].z) m_v3MinG.z = v3Points[i].z; 
 	}
 	
 	//we calculate the distance between min and max vectors
