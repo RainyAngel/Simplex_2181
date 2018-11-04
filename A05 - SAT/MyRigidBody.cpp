@@ -319,48 +319,38 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	//first object
 	vector3 box1[8];
 	//Back square
-	box1[0] = m_v3MinL;
-	box1[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);
-	box1[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);
-	box1[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);
+	box1[0] = m_m4ToWorld * vector4(m_v3MinL, 1.0f);
+	box1[1] = m_m4ToWorld * vector4(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z, 1.0f);
+	box1[2] = m_m4ToWorld * vector4(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z, 1.0f);
+	box1[3] = m_m4ToWorld * vector4(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z, 1.0f);
 	//Front square
-	box1[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);
-	box1[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);
-	box1[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);
-	box1[7] = m_v3MaxL;
+	box1[4] = m_m4ToWorld * vector4(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z, 1.0f);
+	box1[5] = m_m4ToWorld * vector4(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z, 1.0f);
+	box1[6] = m_m4ToWorld * vector4(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z, 1.0f);
+	box1[7] = m_m4ToWorld * vector4(m_v3MaxL, 1.0f);
 
 	//second object 
 	vector3 box2[8];
 	//Back square
-	box2[0] = a_pOther->m_v3MinL;
-	box2[1] = vector3(a_pOther->m_v3MaxL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MinL.z);
-	box2[2] = vector3(a_pOther->m_v3MinL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MinL.z);
-	box2[3] = vector3(a_pOther->m_v3MaxL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MinL.z);
+	box2[0] = a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3MinL, 1.0f);
+	box2[1] = a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3MaxL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MinL.z, 1.0f);
+	box2[2] = a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3MinL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MinL.z, 1.0f);
+	box2[3] = a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3MaxL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MinL.z, 1.0f);
 	//Front square
-	box2[4] = vector3(a_pOther->m_v3MinL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MaxL.z);
-	box2[5] = vector3(a_pOther->m_v3MaxL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MaxL.z);
-	box2[6] = vector3(a_pOther->m_v3MinL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MaxL.z);
-	box2[7] = a_pOther->m_v3MaxL;
+	box2[4] = a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3MinL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MaxL.z, 1.0f);
+	box2[5] = a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3MaxL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MaxL.z, 1.0f);
+	box2[6] = a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3MinL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MaxL.z, 1.0f);
+	box2[7] = a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3MaxL, 1.0f);
 #pragma endregion 
 
 #pragma region GET THE MAX AND MIN
 	//calculate the new max and min for both objects according to each axis 
 
-	//define the min and max for both distance and the points
-	vector3 v3Max1 = box1[0];
+	//define the min and max for both distance
 	float fMax1 = glm::dot(axisList[0], box1[0]);
-	vector3 v3Min1 = box1[0];
 	float fMin1 = glm::dot(axisList[0], box1[0]);
-	vector3 v3Max2 = box2[0];
 	float fMax2 = glm::dot(axisList[0], box2[0]);
-	vector3 v3Min2 = box2[0];
 	float fMin2 = glm::dot(axisList[0], box2[0]);
-
-	//array to save the min and max points
-	vector3 v3MaxList1[15];
-	vector3 v3MinList1[15];
-	vector3 v3MaxList2[15];
-	vector3 v3MinList2[15];
 
 	//cycle through all the saved axis
 	for (uint i = 0; i < 15; i++)
@@ -378,12 +368,11 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 			//this object
 			float dot1 = glm::dot(axisList[i], box1[j]);
 
+			//check to see if it is greater or less than the current stored dot products
 			if (fMax1 < dot1) {
-				v3Max1 = box1[i];
 				fMax1 = dot1;
 			}
 			else if (fMin1 > dot1) {
-				v3Min1 = box1[i];
 				fMin1 = dot1;
 			}
 
@@ -391,23 +380,20 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 			float dot2 = glm::dot(axisList[i], box2[j]);
 
 			if (fMax2 < dot2) {
-				v3Max2 = box2[i];
 				fMax2 = dot2;
 			}
 			else if (fMin2 > dot2) {
-				v3Min2 = box2[i];
 				fMin2 = dot2;
 			}
 		}
-		//save the max and min points to each axis
-		v3MaxList1[i] = v3Max1;
-		v3MinList1[i] = v3Min1;
-		v3MaxList2[i] = v3Max2;
-		v3MinList2[i] = v3Min2;
+
+		//if there is no collision on any of the planes, then there is no collision
+		if (fMin2 > fMax1 || fMin1 > fMax2) 
+			return 1;
 	}
+
+	//if there is collision, the end will be reached here
+	return 0;
 #pragma endregion 
 	
-
-	//there is no axis test that separates this two objects
-	return eSATResults::SAT_NONE;
 }
