@@ -343,16 +343,69 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	box2[7] = a_pOther->m_v3MaxL;
 #pragma endregion 
 
+#pragma region GET THE MAX AND MIN
 	//calculate the new max and min for both objects according to each axis 
 
-	//define the min and max
-	vector3 max1 = box1[0];
-	vector3 min1 = box1[0];
-	vector3 max2 = box2[0];
-	vector3 min2 = box2[0];
+	//define the min and max for both distance and the points
+	vector3 v3Max1 = box1[0];
+	float fMax1 = glm::dot(axisList[0], box1[0]);
+	vector3 v3Min1 = box1[0];
+	float fMin1 = glm::dot(axisList[0], box1[0]);
+	vector3 v3Max2 = box2[0];
+	float fMax2 = glm::dot(axisList[0], box2[0]);
+	vector3 v3Min2 = box2[0];
+	float fMin2 = glm::dot(axisList[0], box2[0]);
 
+	//array to save the min and max points
+	vector3 v3MaxList1[15];
+	vector3 v3MinList1[15];
+	vector3 v3MaxList2[15];
+	vector3 v3MinList2[15];
 
+	//cycle through all the saved axis
+	for (uint i = 0; i < 15; i++)
+	{
+		//calculate the next min and max of next axis
+		fMax1 = glm::dot(axisList[i], box1[0]);
+		fMin1 = glm::dot(axisList[i], box1[0]);
+		fMax2 = glm::dot(axisList[i], box2[0]);
+		fMin2 = glm::dot(axisList[i], box2[0]);
 
+		//cycle through all the points of the bounding boxes
+		for (uint j = 1; j < 8; j++)
+		{
+			//get the dot product to the current axis
+			//this object
+			float dot1 = glm::dot(axisList[i], box1[j]);
+
+			if (fMax1 < dot1) {
+				v3Max1 = box1[i];
+				fMax1 = dot1;
+			}
+			else if (fMin1 > dot1) {
+				v3Min1 = box1[i];
+				fMin1 = dot1;
+			}
+
+			//other object
+			float dot2 = glm::dot(axisList[i], box2[j]);
+
+			if (fMax2 < dot2) {
+				v3Max2 = box2[i];
+				fMax2 = dot2;
+			}
+			else if (fMin2 > dot2) {
+				v3Min2 = box2[i];
+				fMin2 = dot2;
+			}
+		}
+		//save the max and min points to each axis
+		v3MaxList1[i] = v3Max1;
+		v3MinList1[i] = v3Min1;
+		v3MaxList2[i] = v3Max2;
+		v3MinList2[i] = v3Min2;
+	}
+#pragma endregion 
 	
 
 	//there is no axis test that separates this two objects
