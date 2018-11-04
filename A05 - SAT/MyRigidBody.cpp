@@ -276,16 +276,84 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
+#pragma region AXIS CALCULATION
+	//get the local x, y, and z axis of each object
+	vector3 x1 = m_m4ToWorld * vector4(1.0f, 0.0f, 0.0f, 0.0f);
+	vector3 y1 = m_m4ToWorld * vector4(0.0f, 1.0f, 0.0f, 0.0f);
+	vector3 z1 = m_m4ToWorld * vector4(0.0f, 0.0f, 1.0f, 0.0f);
+	vector3 x2 = a_pOther->m_m4ToWorld * vector4(1.0f, 0.0f, 0.0f, 0.0f);
+	vector3 y2 = a_pOther->m_m4ToWorld * vector4(0.0f, 1.0f, 0.0f, 0.0f);
+	vector3 z2 = a_pOther->m_m4ToWorld * vector4(0.0f, 0.0f, 1.0f, 0.0f);
 
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
+	//list for storing all the possible perpendicular axis
+	vector3 axisList[15];
+
+	//save the axis themselves
+	axisList[0] = glm::normalize(x1);
+	axisList[1] = glm::normalize(y1);
+	axisList[2] = glm::normalize(z1);
+	axisList[3] = glm::normalize(x2);
+	axisList[4] = glm::normalize(y2);
+	axisList[5] = glm::normalize(z2);
+
+	//get the cross product of every possible combination both objects' axis
+	//x of first object to the axis of second object
+	axisList[6] = glm::normalize(glm::cross(x1, x2));
+	axisList[7] = glm::normalize(glm::cross(x1, y2));
+	axisList[8] = glm::normalize(glm::cross(x1, z2));
+
+	//y of first object the axis of second object
+	axisList[9] = glm::normalize(glm::cross(y1, x2));
+	axisList[10] = glm::normalize(glm::cross(y1, y2));
+	axisList[11] = glm::normalize(glm::cross(y1, z2));
+
+	//z of first object the axis of second object
+	axisList[12] = glm::normalize(glm::cross(z1, x2));
+	axisList[13] = glm::normalize(glm::cross(z1, y2));
+	axisList[14] = glm::normalize(glm::cross(z1, z2));
+#pragma endregion 
+
+#pragma region CORNERS OF BOUNDING BOXES
+	//the 8 corners of the bounding box
+
+	//first object
+	vector3 box1[8];
+	//Back square
+	box1[0] = m_v3MinL;
+	box1[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);
+	box1[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);
+	box1[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);
+	//Front square
+	box1[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);
+	box1[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);
+	box1[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);
+	box1[7] = m_v3MaxL;
+
+	//second object 
+	vector3 box2[8];
+	//Back square
+	box2[0] = a_pOther->m_v3MinL;
+	box2[1] = vector3(a_pOther->m_v3MaxL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MinL.z);
+	box2[2] = vector3(a_pOther->m_v3MinL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MinL.z);
+	box2[3] = vector3(a_pOther->m_v3MaxL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MinL.z);
+	//Front square
+	box2[4] = vector3(a_pOther->m_v3MinL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MaxL.z);
+	box2[5] = vector3(a_pOther->m_v3MaxL.x, a_pOther->m_v3MinL.y, a_pOther->m_v3MaxL.z);
+	box2[6] = vector3(a_pOther->m_v3MinL.x, a_pOther->m_v3MaxL.y, a_pOther->m_v3MaxL.z);
+	box2[7] = a_pOther->m_v3MaxL;
+#pragma endregion 
+
+	//calculate the new max and min for both objects according to each axis 
+
+	//define the min and max
+	vector3 max1 = box1[0];
+	vector3 min1 = box1[0];
+	vector3 max2 = box2[0];
+	vector3 min2 = box2[0];
+
+
+
+	
 
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
