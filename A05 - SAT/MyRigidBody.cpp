@@ -350,7 +350,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	float fMax1 = glm::dot(axisList[0], box1[0]);
 	float fMin1 = glm::dot(axisList[0], box1[0]);
 	float fMax2 = glm::dot(axisList[0], box2[0]);
-	float fMin2 = glm::dot(axisList[0], box2[0]);
+	float fMin2 = glm::dot(axisList[0], box2[0]); 
 
 	//cycle through all the saved axis
 	for (uint i = 0; i < 15; i++)
