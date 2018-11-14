@@ -36,6 +36,10 @@ public:
 	OUTPUT: index from the list of entities, -1 if not found
 	*/
 	int GetEntityIndex(String a_sUniqueID);
+	/*USAGE: Returns the entity list of the manager
+	ARGUEMENTS: None
+	OUTPUT: list of entities*/
+	std::vector<MyEntity*> GetEntityList(void);
 	/*
 	USAGE: Will add an entity to the list
 	ARGUMENTS:

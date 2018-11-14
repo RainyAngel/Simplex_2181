@@ -13,10 +13,6 @@ namespace Simplex
 //System Class
 class MyOctant
 {
-	//static uint m_uOctantCount; //will store the number of octants instantiated
-	//static uint m_uMaxLevel;//will store the maximum level an octant can go to
-	//static uint m_uIdealEntityCount; //will tell how many ideal Entities this object will contain
-
 	uint m_uID = 0; //Will store the current ID for this octant
 	uint m_uLevel = 0; //Will store the current level of the octant
 	uint m_uChildren = 0;// Number of children on the octant (either 0 or 8)
@@ -25,6 +21,8 @@ class MyOctant
 
 	MeshManager* m_pMeshMngr = nullptr;//Mesh Manager singleton
 	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager Singleton
+
+	MyRigidBody* m_pOctantBody = nullptr;
 
 	vector3 m_v3Center = vector3(0.0f); //Will store the center point of the octant
 	vector3 m_v3Min = vector3(0.0f); //Will store the minimum vector of the octant
@@ -47,7 +45,7 @@ public:
 	- uint nIdealEntityCount = 5 -> Sets the ideal level of objects per octant
 	OUTPUT: class object
 	*/
-	MyOctant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5);
+	MyOctant(void);
 	/*
 	USAGE: Constructor
 	ARGUMENTS:
