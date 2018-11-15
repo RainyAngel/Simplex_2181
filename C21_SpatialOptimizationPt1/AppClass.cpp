@@ -5,6 +5,8 @@ void Application::InitVariables(void)
 	//Alberto needed this at this position for software recording.
 	//m_pWindow->setPosition(sf::Vector2i(710, 0));
 
+	m_pRoot = new MyOctant();
+
 	//Set the position and target of the camera
 	m_pCameraMngr->SetPositionTargetAndUpward(
 		vector3(0.0f, 0.0f, 100.0f), //Position
@@ -30,8 +32,8 @@ void Application::InitVariables(void)
 			m_pEntityMngr->SetModelMatrix(m4Position);
 			//m_pEntityMngr->AddDimension(-1, uIndex);
 			//++uIndex;
-			
-			if (v3Position.x < 0.0f)
+
+			/*if (v3Position.x < 0.0f)
 			{
 				if (v3Position.x < -17.0f)
 					m_pEntityMngr->AddDimension(-1, 1);
@@ -44,7 +46,7 @@ void Application::InitVariables(void)
 					m_pEntityMngr->AddDimension(-1, 3);
 				else
 					m_pEntityMngr->AddDimension(-1, 4);
-			}
+			}*/
 			
 		}
 	}
@@ -66,9 +68,9 @@ void Application::Update(void)
 	//Update Entity Manager
 	m_pEntityMngr->Update();
 
-	m_pMeshMngr->AddGridToRenderList(glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Y));
+	/*m_pMeshMngr->AddGridToRenderList(glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Y));
 	m_pMeshMngr->AddGridToRenderList(glm::translate(vector3(-17.0f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Y));
-	m_pMeshMngr->AddGridToRenderList(glm::translate(vector3(17.0f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Y));
+	m_pMeshMngr->AddGridToRenderList(glm::translate(vector3(17.0f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Y));*/
 		
 	//Add objects to render list
 	m_pEntityMngr->AddEntityToRenderList(-1, true);
