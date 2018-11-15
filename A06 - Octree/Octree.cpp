@@ -175,12 +175,23 @@ MyOctant * Simplex::MyOctant::GetParent(void)
 
 bool Simplex::MyOctant::IsLeaf(void)
 {
-	return false;
+	//if first child in the array is a nullptr, then the octant has no children
+	if (m_pChild[0] == nullptr) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 bool Simplex::MyOctant::ContainsMoreThan(uint a_nEntities)
 {
-	return false;
+	if (m_EntityList.size() > a_nEntities) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 void Simplex::MyOctant::KillBranches(void)

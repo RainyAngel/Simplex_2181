@@ -160,7 +160,7 @@ public:
 	/*
 	USAGE: Asks the MyOctant if it does not contain any children (its a leaf)
 	ARGUMENTS: ---
-	OUTPUT: It contains no children
+	OUTPUT: Returns true if it contains no children
 	*/
 	bool IsLeaf(void);
 	/*
