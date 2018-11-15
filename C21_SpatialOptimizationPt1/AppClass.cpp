@@ -50,6 +50,7 @@ void Application::InitVariables(void)
 	}
 	m_pEntityMngr->Update();
 	m_pRoot = new MyOctant();
+	//m_pRoot = new MyOctant(vector3(10.0f), 12.0f);
 	//steve
 	//m_pEntityMngr->AddEntity("Minecraft\\Steve.obj", "Steve");
 }
@@ -65,7 +66,7 @@ void Application::Update(void)
 	CameraRotation();
 	
 	//Update Entity Manager
-	m_pEntityMngr->Update();
+	//m_pEntityMngr->Update();
 
 	/*m_pMeshMngr->AddGridToRenderList(glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Y));
 	m_pMeshMngr->AddGridToRenderList(glm::translate(vector3(-17.0f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Y));
