@@ -2,8 +2,8 @@
 Programmer: Alberto Bobadilla (labigm@gmail.com)
 Date: 2017/06
 ----------------------------------------------*/
-#ifndef _MYOCTANT_H_
-#define _MYOCTANT_H_
+#ifndef __MYOCTANT_H_
+#define __MYOCTANT_H_
 
 #include "Simplex\Simplex.h"
 #include "MyEntityManager.h"
@@ -17,7 +17,7 @@ class MyOctant
 	int m_nData = 0; //Number of elements in the list of elements
 	std::vector<int> m_lData; //list of elements
 	MeshManager* m_pMeshMngr = nullptr; //Pointer to Mesh manager
-	MyEntityManager* m_pEntityMngr = nullptr; //Pointer to the Entity manager
+	MyEntityManager* m_pEntityMngr = nullptr;
 	MyRigidBody* m_pRigidBody = nullptr;
 	uint m_iID = 0;
 	MyOctant* m_pParent = nullptr;
@@ -104,7 +104,7 @@ private:
 
 } //namespace Simplex
 
-#endif //_MYOCTANT_H__
+#endif //__MYOCTANT_H_
 
 /*
 USAGE:

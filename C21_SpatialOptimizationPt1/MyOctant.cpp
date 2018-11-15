@@ -6,24 +6,38 @@ void MyOctant::Init(void)
 	m_nData = 0;
 	m_pMeshMngr = MeshManager::GetInstance();
 	m_pEntityMngr = MyEntityManager::GetInstance();
-
-	std::vector<MyEntity*> l_EntityList = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = l_EntityList.size();
-	std::vector<vector3> v3MaxMin_List;
-
-	for (uint i = 0; i < iEntityCount; i++)
+	std::vector<MyEntity*> l_Entity_List = m_pEntityMngr->GetEntityList();
+	uint iEntityCount = l_Entity_List.size();
+	std::vector<vector3> v3MaxMin_list;
+	for (uint i = 0; i < iEntityCount; ++i)
 	{
-		MyRigidBody* pRG = l_EntityList[i]->GetRigidBody();
-		vector3 v3Position = pRG->GetCenterGlobal();
-
+		MyRigidBody* pRG = l_Entity_List[i]->GetRigidBody();
 		vector3 v3Min = pRG->GetMinGlobal();
 		vector3 v3Max = pRG->GetMaxGlobal();
-
-		v3MaxMin_List.push_back(v3Min);
-		v3MaxMin_List.push_back(v3Max);
+		v3MaxMin_list.push_back(v3Min);
+		v3MaxMin_list.push_back(v3Max);
+		/*vector3 v3Position = pRG->GetCenterGlobal();
+		if (v3Position.x < 0.0f)
+		{
+			if (v3Position.x < -17.0f)
+				m_pEntityMngr->AddDimension(i, 1);
+			else
+				m_pEntityMngr->AddDimension(i, 2);
+		}
+		else if (v3Position.x > 0.0f)
+		{
+			if (v3Position.x > 17.0f)
+				m_pEntityMngr->AddDimension(i, 3);
+			else
+				m_pEntityMngr->AddDimension(i, 4);
+				vector3 v3Min = pRG->GetMinGlobal();
+				}*/
 	}
-
-	m_pRigidBody = new MyRigidBody(v3MaxMin_List);
+	for (uint i = 0; i < 8; i++)
+	{
+		m_pChild[i] = nullptr;
+	}
+	m_pRigidBody = new MyRigidBody(v3MaxMin_list);
 	IsColliding();
 }
 void MyOctant::Swap(MyOctant& other)
@@ -42,30 +56,26 @@ void Simplex::MyOctant::Display(void)
 }
 void Simplex::MyOctant::IsColliding(void)
 {
-	std::vector<MyEntity*> l_EntityList = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = l_EntityList.size();
-	std::vector<vector3> v3MaxMin_List;
-
-	for (uint i = 0; i < iEntityCount; i++) {
-		MyRigidBody* pRB = l_EntityList[i]->GetRigidBody();
-		if (pRB->IsColliding(m_pRigidBody)) {
-			l_EntityList[i]->AddDimension(m_iID);
+	std::vector<MyEntity*> l_Entity_List = m_pEntityMngr->GetEntityList();
+	uint iEntityCount = l_Entity_List.size();
+	for (uint i = 0; i < iEntityCount; ++i)
+	{
+		MyRigidBody* pRB = l_Entity_List[i]->GetRigidBody();
+		if (pRB->IsColliding(m_pRigidBody))
+		{
+			l_Entity_List[i]->AddDimension(m_iID);
 		}
 	}
-
+}
+void MyOctant::Subdivide()
+{
 	for (uint i = 0; i < 8; i++)
 	{
-		m_pChild[i] = nullptr;
+		m_pChild[i] = new MyOctant();
 	}
 }
 
-void MyOctant::Subdivide() {
-	for (uint i = 0; i < 8; i++)
-	{
-		
-	}
-}
-Simplex::MyOctant::MyOctant(vector3 m_v3Size)
+MyOctant::MyOctant(vector3 m_v3Size)
 {
 }
 //The big 3
