@@ -5,8 +5,8 @@ Simplex::MyOctant::MyOctant()
 { 
 	Init(); 
 	//get the entity list and the count
-	std::vector<MyEntity*> l_Entity_List = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = l_Entity_List.size(); 
+	MyEntity** l_Entity_List = m_pEntityMngr->GetEntityList();
+	uint iEntityCount = m_pEntityMngr->GetEntityCount();
 
 	//create a list of all the min and max points
 	std::vector<vector3> v3MaxMin_list; 
@@ -152,8 +152,8 @@ vector3 Simplex::MyOctant::GetMaxGlobal(void)
 
 void Simplex::MyOctant::IsColliding(uint a_uRBIndex)
 {
-	std::vector<MyEntity*> l_Entity_List = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = l_Entity_List.size();
+	MyEntity** l_Entity_List = m_pEntityMngr->GetEntityList();
+	uint iEntityCount = m_pEntityMngr->GetEntityCount();
 	for (uint i = 0; i < iEntityCount; ++i)
 	{
 		MyRigidBody* pRB = l_Entity_List[i]->GetRigidBody();
@@ -171,13 +171,8 @@ void Simplex::MyOctant::Display(vector3 a_v3Color)
 	for (uint i = 0; i < 8; i++)
 	{
 		if (m_pChild[i])
-			m_pChild[i]->Display(a_v3Color);
+			m_pChild[i]->Display(a_v3Color); 
 	}
-}
-
-void Simplex::MyOctant::DisplayLeafs(vector3 a_v3Color)
-{
-
 }
 
 void Simplex::MyOctant::ClearEntityList(void)
@@ -228,13 +223,13 @@ MyOctant * Simplex::MyOctant::GetParent(void)
 bool Simplex::MyOctant::IsLeaf(void)
 {
 	//if first child in the array is a nullptr, then the octant has no children
-	if (m_pChild[0] == nullptr) {
+	if (m_pChild[0] == nullptr) { 
 		return true;
 	}
 	else {
 		return false;
 	}
-}
+} 
 
 bool Simplex::MyOctant::ContainsMoreThan(uint a_nEntities)
 {
@@ -248,9 +243,9 @@ bool Simplex::MyOctant::ContainsMoreThan(uint a_nEntities)
 
 void Simplex::MyOctant::KillBranches(void)
 {
-	for (uint i = 0; i < 8; i++)
+	for (uint i = 0; i < 8; i++) 
 	{
-		m_pChild[i]->Release();
+		SafeDelete(m_pChild[i]); 
 	}
 }
 
@@ -271,7 +266,7 @@ void Simplex::MyOctant::Release(void)
 {
 	for (uint i = 0; i < 8; i++)
 	{
-		SafeDelete(m_pChild[i]);
+		SafeDelete(m_pChild[i]); 
 	}
 }
 
@@ -284,4 +279,5 @@ void Simplex::MyOctant::Init(void)
 
 void Simplex::MyOctant::ConstructList(void)
 {
+	
 }

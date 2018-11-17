@@ -10,7 +10,7 @@ Date: 2017/07
 namespace Simplex
 {
 
-//System Class
+//System Class 
 class MyEntityManager
 {
 	typedef MyEntity* PEntity; //MyEntity Pointer
@@ -38,8 +38,8 @@ public:
 	int GetEntityIndex(String a_sUniqueID);
 	/*USAGE: Returns the entity list of the manager
 	ARGUEMENTS: None
-	OUTPUT: list of entities*/
-	std::vector<MyEntity*> GetEntityList(void);
+	OUTPUT: list of entities*/ 
+	MyEntity** GetEntityList(void);
 	/*
 	USAGE: Will add an entity to the list
 	ARGUMENTS:
@@ -49,7 +49,7 @@ public:
 	*/
 	void AddEntity(String a_sFileName, String a_sUniqueID = "NA");
 	/*
-	USAGE: Deletes the MyEntity Specified by unique ID and removes it from the list
+	USAGE: Deletes the MyEntity Specified by unique ID and removes it from the list 
 	ARGUMENTS: uint a_uIndex -> index of the queried entry, if < 0 asks for the last one added
 	OUTPUT: ---
 	*/

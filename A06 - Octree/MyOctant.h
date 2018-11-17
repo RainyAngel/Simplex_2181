@@ -119,13 +119,6 @@ public:
 	*/
 	void Display(vector3 a_v3Color = C_YELLOW);
 	/*
-	USAGE: Displays the non empty leafs in the octree
-	ARGUMENTS:
-	- vector3 a_v3Color = REYELLOW -> Color of the volume to display.
-	OUTPUT: ---
-	*/
-	void DisplayLeafs(vector3 a_v3Color = C_YELLOW);
-	/*
 	USAGE: Clears the Entity list for each node
 	ARGUMENTS: ---
 	OUTPUT: ---

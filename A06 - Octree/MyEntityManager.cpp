@@ -45,17 +45,9 @@ int Simplex::MyEntityManager::GetEntityIndex(String a_sUniqueID)
 	return -1;
 }
 
-std::vector<MyEntity*> Simplex::MyEntityManager::GetEntityList(void)
+MyEntity** Simplex::MyEntityManager::GetEntityList(void)
 {
-	std::vector<MyEntity*> entityList; 
-
-	//store the entities in the array to a list (it makes life easier)
-	for (uint i = 0; i < m_uEntityCount; i++)
-	{
-		entityList.push_back(m_mEntityArray[i]); 
-	}
-
-	return entityList;
+	return m_mEntityArray; 
 }
 
 //Accessors

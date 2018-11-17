@@ -370,6 +370,7 @@ bool MyRigidBody::IsInCollidingArray(MyRigidBody* a_pEntry)
 
 void MyRigidBody::MakeCubic(void) 
 {
+	//this error
 	float fSize = m_v3HalfWidth.x;
 	fSize = glm::max(fSize, m_v3HalfWidth.y);
 	fSize = glm::max(fSize, m_v3HalfWidth.z);
