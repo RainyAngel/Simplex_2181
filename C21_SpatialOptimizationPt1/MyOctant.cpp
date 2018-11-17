@@ -51,7 +51,7 @@ void MyOctant::Subdivide()
 	vector3 v3Center = m_pRigidBody->GetCenterLocal();
 	vector3 v3HalfWidth = m_pRigidBody->GetHalfWidth();
 	float fSize = (v3HalfWidth.x) / 2.0f;
-	float fCenters = fSize / 2.0f;
+	float fCenters = fSize;
 
 	m_pChild[0] = new MyOctant(v3Center + vector3(fCenters, fCenters, fCenters), fSize);
 	m_pChild[1] = new MyOctant(v3Center + vector3(-fCenters, fCenters, fCenters), fSize);

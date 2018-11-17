@@ -1,17 +1,44 @@
-#include "Octree.h"
+#include "MyOctant.h"
 using namespace Simplex;
 
-Simplex::MyOctant::MyOctant() { Init(); }
+Simplex::MyOctant::MyOctant() 
+{ 
+	Init(); 
+	//get the entity list and the count
+	std::vector<MyEntity*> l_Entity_List = m_pEntityMngr->GetEntityList();
+	uint iEntityCount = l_Entity_List.size(); 
+
+	//create a list of all the min and max points
+	std::vector<vector3> v3MaxMin_list; 
+	for (uint i = 0; i < iEntityCount; ++i)
+	{
+		MyRigidBody* pRG = l_Entity_List[i]->GetRigidBody();
+		vector3 v3Min = pRG->GetMinGlobal();
+		vector3 v3Max = pRG->GetMaxGlobal();
+		v3MaxMin_list.push_back(v3Min);
+		v3MaxMin_list.push_back(v3Max);
+	}
+
+	//initialize the children of the current octant to nullptr 
+	for (uint i = 0; i < 8; i++)
+	{
+		m_pChild[i] = nullptr;
+	}
+
+	//create a "rigid body" for all the points where it will find the actual min, max, and center for you
+	m_pOctantBody = new MyRigidBody(v3MaxMin_list);
+
+	m_pOctantBody->MakeCubic();
+	Subdivide();
+}
 
 Simplex::MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
 {
-	//save the values
-	m_v3Center = a_v3Center;
-	m_fSize = a_fSize;
-
-	//get min and max
-	m_v3Max = m_v3Center + vector3(a_fSize);
-	m_v3Min = m_v3Center - vector3(a_fSize);
+	Init();
+	std::vector<vector3> v3MaxMin_List;
+	v3MaxMin_List.push_back(a_v3Center - vector3(a_fSize));
+	v3MaxMin_List.push_back(a_v3Center + vector3(a_fSize));
+	m_pOctantBody = new MyRigidBody(v3MaxMin_List);
 }
 
 Simplex::MyOctant::MyOctant(MyOctant const & other)
@@ -123,7 +150,7 @@ vector3 Simplex::MyOctant::GetMaxGlobal(void)
 	return m_v3Max;
 }
 
-bool Simplex::MyOctant::IsColliding(uint a_uRBIndex)
+void Simplex::MyOctant::IsColliding(uint a_uRBIndex)
 {
 	std::vector<MyEntity*> l_Entity_List = m_pEntityMngr->GetEntityList();
 	uint iEntityCount = l_Entity_List.size();
@@ -132,21 +159,25 @@ bool Simplex::MyOctant::IsColliding(uint a_uRBIndex)
 		MyRigidBody* pRB = l_Entity_List[i]->GetRigidBody();
 		if (pRB->IsColliding(m_pOctantBody))
 		{
-			l_Entity_List[i]->AddDimension(a_uRBIndex);
+			l_Entity_List[i]->AddDimension(m_uID);
 		}
 	}
 }
 
-void Simplex::MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
-{
-}
-
 void Simplex::MyOctant::Display(vector3 a_v3Color)
 {
+	m_pOctantBody->AddToRenderList();
+
+	for (uint i = 0; i < 8; i++)
+	{
+		if (m_pChild[i])
+			m_pChild[i]->Display(a_v3Color);
+	}
 }
 
 void Simplex::MyOctant::DisplayLeafs(vector3 a_v3Color)
 {
+
 }
 
 void Simplex::MyOctant::ClearEntityList(void)
@@ -156,10 +187,31 @@ void Simplex::MyOctant::ClearEntityList(void)
 
 void Simplex::MyOctant::Subdivide(void)
 {
+	//will stop the recursive process
+	if (m_uLevel > 3)
+		return;
+
 	//allocate the smaller octants of this big octant
+	vector3 v3Center = m_pOctantBody->GetCenterLocal();
+	vector3 v3HalfWidth = m_pOctantBody->GetHalfWidth();
+	float fSize = (v3HalfWidth.x) / 2.0f;
+	float fCenters = fSize;
+
+	m_pChild[0] = new MyOctant(v3Center + vector3(fCenters, fCenters, fCenters), fSize);
+	m_pChild[1] = new MyOctant(v3Center + vector3(-fCenters, fCenters, fCenters), fSize);
+	m_pChild[2] = new MyOctant(v3Center + vector3(-fCenters, -fCenters, fCenters), fSize);
+	m_pChild[3] = new MyOctant(v3Center + vector3(fCenters, -fCenters, fCenters), fSize);
+
+	m_pChild[4] = new MyOctant(v3Center + vector3(fCenters, fCenters, -fCenters), fSize);
+	m_pChild[5] = new MyOctant(v3Center + vector3(-fCenters, fCenters, -fCenters), fSize);
+	m_pChild[6] = new MyOctant(v3Center + vector3(-fCenters, -fCenters, -fCenters), fSize);
+	m_pChild[7] = new MyOctant(v3Center + vector3(fCenters, -fCenters, -fCenters), fSize);
+
 	for (uint i = 0; i < 8; i++)
 	{
-		m_pChild[i] = new MyOctant();
+		m_pChild[i]->m_uLevel = m_uLevel + 1;
+		m_pChild[i]->m_pParent = this;
+		m_pChild[i]->Subdivide();
 	}
 }
 
@@ -196,6 +248,10 @@ bool Simplex::MyOctant::ContainsMoreThan(uint a_nEntities)
 
 void Simplex::MyOctant::KillBranches(void)
 {
+	for (uint i = 0; i < 8; i++)
+	{
+		m_pChild[i]->Release();
+	}
 }
 
 void Simplex::MyOctant::ConstructTree(uint a_nMaxLevel)
@@ -216,7 +272,6 @@ void Simplex::MyOctant::Release(void)
 	for (uint i = 0; i < 8; i++)
 	{
 		SafeDelete(m_pChild[i]);
-		m_pChild[i] = NULL;
 	}
 }
 
@@ -225,32 +280,6 @@ void Simplex::MyOctant::Init(void)
 	//get the singletons of the mesh manager and enitity manager
 	m_pMeshMngr = MeshManager::GetInstance();
 	m_pEntityMngr = MyEntityManager::GetInstance();
-
-	//get the entity list and the count
-	std::vector<MyEntity*> l_Entity_List = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = l_Entity_List.size();
-
-	//create a list of all the min and max points
-	std::vector<vector3> v3MaxMin_list;
-	for (uint i = 0; i < iEntityCount; ++i)
-	{
-		MyRigidBody* pRG = l_Entity_List[i]->GetRigidBody();
-		vector3 v3Min = pRG->GetMinGlobal();
-		vector3 v3Max = pRG->GetMaxGlobal();
-		v3MaxMin_list.push_back(v3Min);
-		v3MaxMin_list.push_back(v3Max);
-	}
-
-	//initialize the children of the current octant to nullptr 
-	for (uint i = 0; i < 8; i++)
-	{
-		m_pChild[i] = nullptr;
-	}
-
-	//create a "rigid body" for all the points where it will find the actual min, max, and center for you
-	m_pOctantBody = new MyRigidBody(v3MaxMin_list);
-
-	IsColliding(m_uID);
 }
 
 void Simplex::MyOctant::ConstructList(void)

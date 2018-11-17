@@ -14,7 +14,7 @@ namespace Simplex
 class MyEntityManager
 {
 	typedef MyEntity* PEntity; //MyEntity Pointer
-	uint m_uEntityCount = 0; //number of elements in the list
+	uint m_uEntityCount = 0; //number of elements in the list 
 	PEntity* m_mEntityArray = nullptr; //array of MyEntity pointers
 	static MyEntityManager* m_pInstance; // Singleton pointer
 public:

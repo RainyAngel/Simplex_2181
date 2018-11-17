@@ -236,6 +236,10 @@ public:
 	OUTPUT: is it in the array?
 	*/
 	bool IsInCollidingArray(MyRigidBody* a_pEntry);
+	/*USAGE: For adjusting the box drawn for each octant
+	ARGUEMENTS: NONE
+	OUTPUT: NONE*/
+	void MakeCubic();
 	
 private:
 	/*

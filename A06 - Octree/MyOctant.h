@@ -110,15 +110,7 @@ public:
 	- int a_uRBIndex -> Index of the Entity in the Entity Manager
 	OUTPUT: check of the collision
 	*/
-	bool IsColliding(uint a_uRBIndex);
-	/*
-	USAGE: Displays the MyOctant volume specified by index including the objects underneath
-	ARGUMENTS:
-	- uint a_nIndex -> MyOctant to be displayed.
-	- vector3 a_v3Color = REYELLOW -> Color of the volume to display.
-	OUTPUT: ---
-	*/
-	void Display(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
+	void IsColliding(uint a_uRBIndex);
 	/*
 	USAGE: Displays the MyOctant volume in the color specified
 	ARGUMENTS:

@@ -1,4 +1,4 @@
-#include "MyEntityManager.h"
+#include "MyEntityManager.h" 
 using namespace Simplex;
 //  MyEntityManager
 Simplex::MyEntityManager* Simplex::MyEntityManager::m_pInstance = nullptr;
@@ -47,12 +47,12 @@ int Simplex::MyEntityManager::GetEntityIndex(String a_sUniqueID)
 
 std::vector<MyEntity*> Simplex::MyEntityManager::GetEntityList(void)
 {
-	std::vector<MyEntity*> entityList;
+	std::vector<MyEntity*> entityList; 
 
 	//store the entities in the array to a list (it makes life easier)
 	for (uint i = 0; i < m_uEntityCount; i++)
 	{
-		entityList.push_back(m_mEntityArray[i]);
+		entityList.push_back(m_mEntityArray[i]); 
 	}
 
 	return entityList;

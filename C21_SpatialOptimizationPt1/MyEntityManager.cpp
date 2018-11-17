@@ -19,7 +19,7 @@ void MyEntityManager::Release(void)
 	m_EntityList.clear();
 	m_mEntityArray = nullptr;
 }
-std::vector<MyEntity*> Simplex::MyEntityManager::GetEntityList(void)
+std::vector<MyEntity*> MyEntityManager::GetEntityList(void)
 {
 	return m_EntityList;
 }
