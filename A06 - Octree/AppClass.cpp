@@ -44,6 +44,8 @@ void Application::Update(void)
 	//Is the first person camera active?
 	CameraRotation();
 	
+	//octtree->AssignIDtoEntity();
+
 	//Update Entity Manager
 	m_pEntityMngr->Update();
 

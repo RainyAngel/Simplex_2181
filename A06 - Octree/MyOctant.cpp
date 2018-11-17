@@ -4,6 +4,10 @@ using namespace Simplex;
 Simplex::MyOctant::MyOctant() 
 { 
 	Init(); 
+
+	//set it to the very first octant, the big octant
+	m_pRoot = this;
+
 	//get the entity list and the count
 	MyEntity** l_Entity_List = m_pEntityMngr->GetEntityList();
 	uint iEntityCount = m_pEntityMngr->GetEntityCount();
@@ -12,6 +16,9 @@ Simplex::MyOctant::MyOctant()
 	std::vector<vector3> v3MaxMin_list; 
 	for (uint i = 0; i < iEntityCount; ++i)
 	{
+		//push the entities onto the big list so the big octant is aware there are entities in it
+		uint entity_id = m_pEntityMngr->GetEntityIndex(l_Entity_List[i]->GetUniqueID());
+		m_EntityList.push_back(entity_id);
 		MyRigidBody* pRG = l_Entity_List[i]->GetRigidBody();
 		vector3 v3Min = pRG->GetMinGlobal();
 		vector3 v3Max = pRG->GetMaxGlobal();
@@ -28,8 +35,15 @@ Simplex::MyOctant::MyOctant()
 	//create a "rigid body" for all the points where it will find the actual min, max, and center for you
 	m_pOctantBody = new MyRigidBody(v3MaxMin_list);
 
+	//makes sure the rigid body is tight to the big octant
 	m_pOctantBody->MakeCubic();
+
 	Subdivide();
+
+	//call on root and it will work itself down to the actual leaves
+	ConstructList();
+
+	AssignIDtoEntity();
 }
 
 Simplex::MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
@@ -152,15 +166,10 @@ vector3 Simplex::MyOctant::GetMaxGlobal(void)
 
 void Simplex::MyOctant::IsColliding(uint a_uRBIndex)
 {
-	MyEntity** l_Entity_List = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = m_pEntityMngr->GetEntityCount();
-	for (uint i = 0; i < iEntityCount; ++i)
+	MyRigidBody* pRB = m_pEntityMngr->GetEntity(a_uRBIndex)->GetRigidBody();
+	if (pRB->IsColliding(m_pOctantBody))
 	{
-		MyRigidBody* pRB = l_Entity_List[i]->GetRigidBody();
-		if (pRB->IsColliding(m_pOctantBody))
-		{
-			l_Entity_List[i]->AddDimension(m_uID);
-		}
+		m_EntityList.push_back(a_uRBIndex);
 	}
 }
 
@@ -183,7 +192,7 @@ void Simplex::MyOctant::ClearEntityList(void)
 void Simplex::MyOctant::Subdivide(void)
 {
 	//will stop the recursive process
-	if (m_uLevel > 3)
+	if (m_uLevel > 1)
 		return;
 
 	//allocate the smaller octants of this big octant
@@ -204,8 +213,19 @@ void Simplex::MyOctant::Subdivide(void)
 
 	for (uint i = 0; i < 8; i++)
 	{
+		//check every entity under the child
+		for (uint j = 0; j < m_EntityList.size(); j++)
+		{
+			m_pChild[i]->IsColliding(m_EntityList[j]);
+		}
+		
+		//increment level
 		m_pChild[i]->m_uLevel = m_uLevel + 1;
+		//set the child as the new "big octant"
 		m_pChild[i]->m_pParent = this;
+		//set all children's root to the big octant
+		m_pChild[i]->m_pRoot = m_pRoot;
+		//recursive
 		m_pChild[i]->Subdivide();
 	}
 }
@@ -255,6 +275,17 @@ void Simplex::MyOctant::ConstructTree(uint a_nMaxLevel)
 
 void Simplex::MyOctant::AssignIDtoEntity(void)
 {
+	//to get the leaves
+	for (uint i = 0; i < m_lChild.size(); i++)
+	{
+		m_lChild[i]->m_uID = i;
+		//to get the entities in the leaves
+		for (uint j = 0; j < m_lChild[i]->m_EntityList.size(); j++)
+		{
+			//to assign entities their leaves
+			m_pEntityMngr->AddDimension(m_lChild[i]->m_EntityList[j], m_lChild[i]->m_uID);
+		}
+	}
 }
 
 uint Simplex::MyOctant::GetOctantCount(void)
@@ -279,5 +310,16 @@ void Simplex::MyOctant::Init(void)
 
 void Simplex::MyOctant::ConstructList(void)
 {
-	
+	//if it is a leaf, save it
+	if (IsLeaf())
+	{
+		m_pRoot->m_lChild.push_back(this);
+	}
+	//if not, recurse this until you find a leaf
+	else {
+		for (uint i = 0; i < 8; i++)
+		{
+			m_pChild[i]->ConstructList();
+		}
+	}
 }
