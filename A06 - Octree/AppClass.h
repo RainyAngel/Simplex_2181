@@ -23,7 +23,9 @@ class Application
 	uint m_uObjects = 0; //Number of objects in the scene
 	uint m_uOctantLevels = 0; //Number of levels in the octree
 
-	MyOctant* octtree = nullptr;
+	MyOctant* m_pRoot = nullptr; //create the octtree object
+
+	bool isDisplay = true; //for turning the display on and off
 
 private:
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //programmer

@@ -30,7 +30,7 @@ void Application::InitVariables(void)
 		}
 	}
 	m_uOctantLevels = 1;
-	octtree = new MyOctant();
+	m_pRoot = new MyOctant();
 	m_pEntityMngr->Update();
 }
 void Application::Update(void)
@@ -43,8 +43,6 @@ void Application::Update(void)
 
 	//Is the first person camera active?
 	CameraRotation();
-	
-	//octtree->AssignIDtoEntity();
 
 	//Update Entity Manager
 	m_pEntityMngr->Update();
@@ -52,8 +50,12 @@ void Application::Update(void)
 	//Add objects to render list
 	m_pEntityMngr->AddEntityToRenderList(-1, true);
 
-	//display the octtree
-	octtree->Display();
+	//press B to turn the visuals on and off
+	if (isDisplay)
+	{
+		//display the octtree
+		m_pRoot->Display();
+	}
 }
 void Application::Display(void)
 {
@@ -82,5 +84,5 @@ void Application::Release(void)
 {
 	//release GUI
 	ShutdownGUI();
-	SafeDelete(octtree);
+	SafeDelete(m_pRoot);
 }

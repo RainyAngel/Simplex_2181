@@ -1,12 +1,15 @@
 #include "MyOctant.h"
 using namespace Simplex;
 
-Simplex::MyOctant::MyOctant() 
+Simplex::MyOctant::MyOctant(uint a_nMaxLevel, uint nIdealEntityCount)
 { 
 	Init(); 
 
 	//set it to the very first octant, the big octant
 	m_pRoot = this;
+
+	//set the max level
+	m_pRoot->m_uLevelCap = a_nMaxLevel;
 
 	//get the entity list and the count
 	MyEntity** l_Entity_List = m_pEntityMngr->GetEntityList();
@@ -38,11 +41,13 @@ Simplex::MyOctant::MyOctant()
 	//makes sure the rigid body is tight to the big octant
 	m_pOctantBody->MakeCubic();
 
+	//create the octants
 	Subdivide();
 
 	//call on root and it will work itself down to the actual leaves
 	ConstructList();
 
+	//figure out what entities are in what leaves
 	AssignIDtoEntity();
 }
 
@@ -50,18 +55,18 @@ Simplex::MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
 {
 	Init();
 	std::vector<vector3> v3MaxMin_List;
+
+	//calculate the max and min and push onto list
 	v3MaxMin_List.push_back(a_v3Center - vector3(a_fSize));
 	v3MaxMin_List.push_back(a_v3Center + vector3(a_fSize));
+
+	//create the root shell
 	m_pOctantBody = new MyRigidBody(v3MaxMin_List);
 }
 
 Simplex::MyOctant::MyOctant(MyOctant const & other)
 {
-	//copy everything from other
-	//m_uOctantCount = other.m_uOctantCount;
-	//m_uMaxLevel = other.m_uMaxLevel;
-	//m_uIdealEntityCount = other.m_uIdealEntityCount;
-
+	//copy everything 
 	m_uID = other.m_uID;
 	m_uLevel = other.m_uLevel;
 	m_uChildren = other.m_uChildren;
@@ -110,10 +115,6 @@ Simplex::MyOctant::~MyOctant(void)
 
 void Simplex::MyOctant::Swap(MyOctant & other)
 {
-	//std::swap(m_uOctantCount, other.m_uOctantCount);
-	//std::swap(m_uMaxLevel, other.m_uMaxLevel);
-	//std::swap(m_uIdealEntityCount, other.m_uIdealEntityCount);
-
 	std::swap(m_uID, other.m_uID);
 	std::swap(m_uLevel, other.m_uLevel);
 	std::swap(m_uChildren, other.m_uChildren);
@@ -166,9 +167,12 @@ vector3 Simplex::MyOctant::GetMaxGlobal(void)
 
 void Simplex::MyOctant::IsColliding(uint a_uRBIndex)
 {
+	//get the rigid body of the given entity
 	MyRigidBody* pRB = m_pEntityMngr->GetEntity(a_uRBIndex)->GetRigidBody();
+	//check to see if it is within the octant
 	if (pRB->IsColliding(m_pOctantBody))
 	{
+		//save it to the list
 		m_EntityList.push_back(a_uRBIndex);
 	}
 }
@@ -191,8 +195,8 @@ void Simplex::MyOctant::ClearEntityList(void)
 
 void Simplex::MyOctant::Subdivide(void)
 {
-	//will stop the recursive process
-	if (m_uLevel > 1)
+	//stops the recursive process
+	if (m_uLevel >= (m_pRoot->m_uLevelCap))
 		return;
 
 	//allocate the smaller octants of this big octant
@@ -269,10 +273,6 @@ void Simplex::MyOctant::KillBranches(void)
 	}
 }
 
-void Simplex::MyOctant::ConstructTree(uint a_nMaxLevel)
-{
-}
-
 void Simplex::MyOctant::AssignIDtoEntity(void)
 {
 	//to get the leaves
@@ -286,11 +286,6 @@ void Simplex::MyOctant::AssignIDtoEntity(void)
 			m_pEntityMngr->AddDimension(m_lChild[i]->m_EntityList[j], m_lChild[i]->m_uID);
 		}
 	}
-}
-
-uint Simplex::MyOctant::GetOctantCount(void)
-{
-	return uint();
 }
 
 void Simplex::MyOctant::Release(void)

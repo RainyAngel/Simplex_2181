@@ -13,6 +13,8 @@ namespace Simplex
 //System Class
 class MyOctant
 {
+	uint m_uLevelCap = 0; //sets the level cap
+
 	uint m_uID = 0; //Will store the current ID for this octant
 	uint m_uLevel = 0; //Will store the current level of the octant
 	uint m_uChildren = 0;// Number of children on the octant (either 0 or 8)
@@ -22,7 +24,7 @@ class MyOctant
 	MeshManager* m_pMeshMngr = nullptr;//Mesh Manager singleton
 	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager Singleton
 
-	MyRigidBody* m_pOctantBody = nullptr;
+	MyRigidBody* m_pOctantBody = nullptr; //holds the big octant
 
 	vector3 m_v3Center = vector3(0.0f); //Will store the center point of the octant
 	vector3 m_v3Min = vector3(0.0f); //Will store the minimum vector of the octant
@@ -45,7 +47,8 @@ public:
 	- uint nIdealEntityCount = 5 -> Sets the ideal level of objects per octant
 	OUTPUT: class object
 	*/
-	MyOctant(void);
+	MyOctant(uint a_nMaxLevel = 1, uint nIdealEntityCount = 5);
+
 	/*
 	USAGE: Constructor
 	ARGUMENTS:
@@ -167,7 +170,7 @@ public:
 	- uint a_nMaxLevel = 3 -> Sets the maximum level of the tree while constructing it
 	OUTPUT: ---
 	*/
-	void ConstructTree(uint a_nMaxLevel = 3);
+	//void ConstructTree(uint a_nMaxLevel = 3);
 	/*
 	USAGE: Traverse the tree up to the leafs and sets the objects in them to the index
 	ARGUMENTS: ---
@@ -180,7 +183,7 @@ public:
 	ARGUMENTS: ---
 	OUTPUT: ---
 	*/
-	uint GetOctantCount(void);
+	//uint GetOctantCount(void);
 
 private:
 	/*
